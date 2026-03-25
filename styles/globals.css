@@ -1,0 +1,62 @@
+@import "tailwindcss";
+@import "@heroui/styles"; 
+
+:root {
+  --background: #ffffff;
+  --border: oklch(0.922 0 0);
+  --foreground: #171717;
+  --muted-sd: oklch(0.97 0 0);
+  --muted-sd-foreground: oklch(0.556 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --radius: 0.625rem;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --border: oklch(0.1 0 0);
+  --foreground: #ededed;
+  --muted-sd: oklch(0.269 0 0);
+  --muted-sd-foreground: oklch(0.708 0 0);
+  --popover: oklch(0.1 0 0);
+  --popover-foreground: oklch(0.9 0 0);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(43, 43, 43);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+  width: 0;
+}

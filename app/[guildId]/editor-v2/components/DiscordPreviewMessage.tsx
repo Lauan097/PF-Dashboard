@@ -1,0 +1,142 @@
+'use client';
+
+import Image from 'next/image';
+
+import {
+  EditorBlock,
+  TextBlockType,
+  ImageBlockType,
+  SeparatorBlockType,
+  ContainerBlockType,
+} from '@/types/editor';
+import { DiscordTextRenderer } from './DiscordTextRenderer';
+
+interface PreviewProps {
+  blocks: EditorBlock[];
+  serverData: any;
+  currentTime: string;
+}
+
+function PreviewTextBlock({ block, serverData }: { block: TextBlockType; serverData: any }) {
+  const text = block.content.join('\n');
+  return (
+    <div className="flex gap-3 text-[13px] text-[#dbdee1] leading-snug">
+      <div className="flex-1 min-w-0 wrap-break-word">
+        <DiscordTextRenderer text={text} serverData={serverData} />
+      </div>
+      {block.thumbnail && (
+        <div className="relative w-20 h-20 shrink-0">
+          <Image
+            src={block.thumbnail}
+            alt="Thumbnail"
+            fill
+            className="rounded-md object-cover"
+            unoptimized
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PreviewImageBlock({ block }: { block: ImageBlockType }) {
+  if (!block.url) {
+    return (
+      <div className="h-32 rounded-md bg-[#1e1f22] border border-dashed border-zinc-700 flex items-center justify-center text-zinc-500 text-sm">
+        Sem imagem
+      </div>
+    );
+  }
+  return (
+    <div className="rounded-lg overflow-hidden max-w-full w-fit">
+      <Image
+        src={block.url}
+        alt="Block image"
+        width={0}
+        height={0}
+        sizes="100vw"
+        className="w-auto h-auto max-w-full max-h-80 rounded-lg object-contain"
+        unoptimized
+      />
+    </div>
+  );
+}
+
+function PreviewSeparatorBlock({ block }: { block: SeparatorBlockType }) {
+  return (
+    <div className={`w-full flex items-center ${block.spacing === 'large' ? 'py-4' : 'py-1'}`}>
+      {block.hasDivider && <div className="w-full h-px bg-zinc-600/50" />}
+    </div>
+  );
+}
+
+function PreviewContainerBlock({ block, serverData }: { block: ContainerBlockType; serverData: any }) {
+  return (
+    <div
+      className="rounded-md overflow-hidden border-l-4 bg-[#2b2d31] w-fit"
+      style={{ borderLeftColor: block.accentColor || '#5865F2' }}
+    >
+      <div className="p-3 space-y-2">
+        {block.children.map(child => (
+          <PreviewBlock key={child.id} block={child as EditorBlock} serverData={serverData} />
+        ))}
+        {block.children.length === 0 && (
+          <div className="text-zinc-500 text-xs text-center py-2">Container vazio</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PreviewBlock({ block, serverData }: { block: EditorBlock; serverData: any }) {
+  if (block.type === 'text') return <PreviewTextBlock block={block as TextBlockType} serverData={serverData} />;
+  if (block.type === 'image') return <PreviewImageBlock block={block as ImageBlockType} />;
+  if (block.type === 'separator') return <PreviewSeparatorBlock block={block as SeparatorBlockType} />;
+  if (block.type === 'container') return <PreviewContainerBlock block={block as ContainerBlockType} serverData={serverData} />;
+  return null;
+}
+
+export function DiscordPreviewMessage({ blocks, serverData, currentTime }: PreviewProps) {
+  return (
+    <div className="flex items-start gap-4 group/msg hover:bg-white/2 px-4 py-1.5 rounded-sm transition-colors duration-100">
+      {/* Avatar */}
+      <div className="shrink-0 mt-1">
+        {serverData?.botAvatar ? (
+          <Image
+            src={serverData.botAvatar}
+            alt="Bot Avatar"
+            width={40}
+            height={40}
+            className="w-10 h-10 rounded-full"
+            unoptimized
+          />
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-zinc-700 animate-pulse" />
+        )}
+      </div>
+
+      {/* Message content */}
+      <div className="flex-1 min-w-0">
+        {/* Header row */}
+        <div className="flex items-center gap-2 mb-1 flex-wrap">
+          <span className="font-medium text-white text-sm hover:underline cursor-pointer">
+            {serverData?.botName ?? (
+              <span className="inline-block w-24 h-4 rounded bg-zinc-700 animate-pulse" />
+            )}
+          </span>
+          <span className="bg-[#5865F2] text-[9px] font-extrabold h-4 flex items-center text-white px-1 rounded-sm leading-none select-none">
+            APP
+          </span>
+          <span className="text-xs text-zinc-400">Hoje às {currentTime || '--:--'}</span>
+        </div>
+
+        {/* Blocks */}
+        <div className="space-y-1">
+          {blocks.map(block => (
+            <PreviewBlock key={block.id} block={block} serverData={serverData} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
