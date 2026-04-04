@@ -228,9 +228,17 @@ function fmtDate(v: string | null) {
 
 interface RecordPDFProps {
   member: MemberRecord;
+  logoSrc?: string;
+  photoSrc?: string;
+  signatureSrc?: string;
 }
 
-export function RecordPDF({ member }: RecordPDFProps) {
+export function RecordPDF({
+  member,
+  logoSrc,
+  photoSrc,
+  signatureSrc,
+}: RecordPDFProps) {
   const specializations: string[] = Array.isArray(member.specializations)
     ? (member.specializations as unknown[]).map(String)
     : typeof member.specializations === "string" && member.specializations
@@ -250,7 +258,7 @@ export function RecordPDF({ member }: RecordPDFProps) {
           <View style={s.headerRow}>
             <View style={s.headerLeft}>
               {/* eslint-disable-next-line jsx-a11y/alt-text */}
-              <Image src="http://localhost:3000/logoTP.png" style={s.logo} />
+              <Image src={logoSrc ?? ""} style={s.logo} />
               <View>
                 <Text style={s.orgTitle}>Polícia Federal</Text>
                 <Text style={s.orgSub}>
@@ -270,10 +278,7 @@ export function RecordPDF({ member }: RecordPDFProps) {
           <View style={s.photoRow}>
             {/* eslint-disable-next-line jsx-a11y/alt-text */}
             <Image
-              src={
-                member.photoUrl ||
-                "https://cdn.discordapp.com/embed/avatars/0.png"
-              }
+              src={photoSrc ?? "https://cdn.discordapp.com/embed/avatars/0.png"}
               style={s.photo}
             />
             <View style={s.mainFields}>
@@ -503,9 +508,9 @@ export function RecordPDF({ member }: RecordPDFProps) {
 
           <View style={s.sigRow}>
             <View style={s.sigCol}>
-              {member.signature ? (
+              {signatureSrc ? (
                 // eslint-disable-next-line jsx-a11y/alt-text
-                <Image src={member.signature} style={s.sigImage} />
+                <Image src={signatureSrc} style={s.sigImage} />
               ) : (
                 <Text
                   style={{
