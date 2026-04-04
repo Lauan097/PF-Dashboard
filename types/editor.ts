@@ -1,5 +1,6 @@
 import { DragEndEvent } from '@dnd-kit/core';
 import React from 'react';
+import type { GuildData } from './globalData';
 
 export type BlockType = 'text' | 'image' | 'separator' | 'container';
 
@@ -48,7 +49,7 @@ export interface BlockProps {
   onRemove: (id: string, parentId?: string) => void;
   parentId?: string;
   onAddChild?: (type: BlockType, parentId: string) => void;
-  sensors?: any;
+  sensors?: ReturnType<typeof import('@dnd-kit/core').useSensors>;
   handleDragEnd?: (e: DragEndEvent) => void;
-  serverData: any;
+  serverData: GuildData | null;
 }

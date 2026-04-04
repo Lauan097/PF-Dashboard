@@ -1,10 +1,10 @@
 export type MemberStatus =
-  | 'PendingForm'
-  | 'InAcademy'
-  | 'Active'
-  | 'Inactive'
-  | 'Suspended'
-  | 'Exonerated';
+  | "PendingForm"
+  | "InAcademy"
+  | "Active"
+  | "Inactive"
+  | "Suspended"
+  | "Exonerated";
 
 export interface MemberRecord {
   id: string;
@@ -18,7 +18,10 @@ export interface MemberRecord {
   realName: string | null;
   realPhone: string | null;
   email: string | null;
-  birthDate: string | null;    // ISO string
+  birthDate: string | null; // ISO string
+  cityAndState: string | null;
+  workStatus: string | null;
+  availableShifts: string | null;
 
   // In-Game
   gameId: string | null;
@@ -26,9 +29,11 @@ export interface MemberRecord {
   phone: string | null;
   photoUrl: string | null;
   level: number | null;
+  backgrounds: boolean | null;
   gender: string | null;
   bloodType: string | null;
   maritalStatus: string | null;
+  signature: string | null;
 
   // Institucional
   internalId: string | null;
@@ -47,8 +52,11 @@ export interface MemberRecord {
   awards: unknown;
   internalNotes: string | null;
 
-  // Assinatura (base64)
-  signature: string | null;
+  // Academia
+  academyStartDate: string | null; // ISO string
+  academyEndDate: string | null; // ISO string
+  academyResult: "Approved" | "Failed" | "Withdrawn" | null;
+  academyNumber: string | null;
 }
 
 export interface MemberRecordResponse {
@@ -61,10 +69,11 @@ export interface MemberRecordErrorResponse {
   error: string;
 }
 
-export type MemberRecordResult = MemberRecordResponse | MemberRecordErrorResponse;
+export type MemberRecordResult =
+  | MemberRecordResponse
+  | MemberRecordErrorResponse;
 
 // -------- OVERVIEW --------
-
 export interface TimeCard {
   name: string;
   horas: number;
@@ -90,7 +99,7 @@ export interface ConductEntry {
   id: string;
   title: string;
   date: string; // ISO string
-  type: 'praise' | 'warning' | 'neutral';
+  type: "praise" | "warning" | "neutral";
 }
 
 export interface TopPartner {
@@ -119,4 +128,6 @@ export interface MemberOverviewErrorResponse {
   error: string;
 }
 
-export type MemberOverviewResult = MemberOverviewResponse | MemberOverviewErrorResponse;
+export type MemberOverviewResult =
+  | MemberOverviewResponse
+  | MemberOverviewErrorResponse;

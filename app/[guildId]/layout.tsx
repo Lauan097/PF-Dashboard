@@ -10,19 +10,18 @@ async function verifyAdminAccess(userId: string): Promise<boolean> {
   return new Promise((resolve) => {
     const timeout = setTimeout(() => resolve(false), 5000);
 
-    socket.emit(
-      "user:checkSession",
-      userId,
-      (response: BotResponse) => {
-        clearTimeout(timeout);
-        if ("success" in response && response.success === false) {
-          resolve(false);
-        } else {
-          const { isAdmin } = response as { isAdmin: boolean; guilds: GuildData[] };
-          resolve(isAdmin);
-        }
+    socket.emit("user:checkSession", userId, (response: BotResponse) => {
+      clearTimeout(timeout);
+      if ("success" in response && response.success === false) {
+        resolve(false);
+      } else {
+        const { isAdmin } = response as {
+          isAdmin: boolean;
+          guilds: GuildData[];
+        };
+        resolve(isAdmin);
       }
-    );
+    });
   });
 }
 
@@ -45,7 +44,9 @@ export default async function GuildLayout({
 
   return (
     <div className="flex h-screen">
-      <SidebarDashboard />
+      <div className="print:hidden">
+        <SidebarDashboard />
+      </div>
       <main className="flex-1 overflow-auto">
         <AnimationWrapper>{children}</AnimationWrapper>
       </main>

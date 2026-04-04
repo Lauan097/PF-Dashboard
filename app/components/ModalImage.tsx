@@ -139,7 +139,7 @@ export const ModalImageUploader = ({
                 onClick={onClose}
               >
                 <motion.div
-                  className="w-full max-w-md rounded-xl bg-zinc-900 p-5 space-y-4"
+                  className="w-full max-w-md rounded-xl bg-zinc-950 p-5 space-y-4"
                   initial={{ scale: 0.9, opacity: 0, y: 20 }}
                   animate={{ scale: 1, opacity: 1, y: 0 }}
                   exit={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -281,7 +281,7 @@ export const ModalImageUploader = ({
                         )}
                       </div>
                       {!isScrollEnd && (
-                        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-zinc-900 to-transparent" />
+                        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-zinc-950 to-transparent" />
                       )}
                     </div>
                   </div>

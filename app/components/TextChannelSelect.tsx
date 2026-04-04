@@ -1,5 +1,14 @@
 ﻿'use client';
-import { ComboBox, Input, Label, ListBox } from "@heroui/react";
+
+import { useState, useMemo } from "react";
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxContent,
+  ComboboxList,
+  ComboboxItem,
+  ComboboxEmpty,
+} from "@/components/combobox";
 import { DiscordIcon } from "./DiscordIcons";
 import { normalizeText } from "@/utils/textUtils";
 
@@ -16,6 +25,8 @@ interface TextChannelSelectProps {
   label?: string;
   placeholder?: string;
   className?: string;
+  type?: "text" | "roles";
+  container?: HTMLElement | null;
 }
 
 export function TextChannelSelect({
@@ -24,36 +35,68 @@ export function TextChannelSelect({
   onChange,
   label,
   placeholder = "Selecione um canal...",
-  className = ""
+  className = "",
+  type = "text",
+  container,
 }: TextChannelSelectProps) {
+  const [searchText, setSearchText] = useState("");
+
+  const selectedName = channels.find((c) => c.id === value)?.name ?? "";
+
+  // Base UI sem `items` prop não filtra automaticamente — fazemos manualmente
+  const filteredChannels = useMemo(() => {
+    if (!searchText) return channels;
+    return channels.filter((c) =>
+      normalizeText(c.name).includes(normalizeText(searchText))
+    );
+  }, [channels, searchText]);
+
   return (
-    <div>
-      <ComboBox
-        className={className}
-        value={value}
-        onChange={(key) => onChange?.(key as string)}
-        defaultFilter={(textValue, inputValue) =>
-          normalizeText(textValue).includes(normalizeText(inputValue))
-        }
-        aria-label={label || "Selecione um canal"}
+    <div className={className}>
+      {label && (
+        <label className="mb-1 block text-sm text-zinc-400">{label}</label>
+      )}
+      <Combobox
+        value={selectedName}
+        onValueChange={(name) => {
+          const ch = channels.find((c) => c.name === (name ?? ""));
+          onChange?.(ch?.id ?? "");
+          setSearchText("");
+        }}
+        onInputValueChange={(val, { reason }) => {
+          if (reason === "input-change") {
+            setSearchText(val);
+          } else {
+            setSearchText("");
+          }
+        }}
+        filteredItems={filteredChannels.map((c) => c.name)}
+        autoHighlight
       >
-        {label && <Label>{label}</Label>}
-        <ComboBox.InputGroup>
-          <Input placeholder={placeholder} />
-          <ComboBox.Trigger />
-        </ComboBox.InputGroup>
-        <ComboBox.Popover className="overflow-hidden">
-          <ListBox className="overflow-y-auto max-h-60">
-            {channels.map((channel) => (
-              <ListBox.Item key={channel.id} id={channel.id} textValue={channel.name} aria-label={channel.name}>
-                <DiscordIcon name="text" className="w-4 h-4" />
-                <span>{channel.name}</span>
-                <ListBox.ItemIndicator />
-              </ListBox.Item>
+        <ComboboxInput
+          placeholder={placeholder}
+          showClear={!!value}
+          className="w-full"
+        />
+        <ComboboxContent container={container}>
+          <ComboboxList>
+            {filteredChannels.map((channel) => (
+              <ComboboxItem
+                key={channel.id}
+                value={channel.name}
+                className="text-md font-medium text-zinc-300/90"
+              >
+                <DiscordIcon
+                  name={type === "roles" ? "roles" : "text"}
+                  className="shrink-0 text-zinc-400"
+                />
+                {channel.name}
+              </ComboboxItem>
             ))}
-          </ListBox>
-        </ComboBox.Popover>
-      </ComboBox>
+          </ComboboxList>
+          <ComboboxEmpty>Nenhum canal encontrado.</ComboboxEmpty>
+        </ComboboxContent>
+      </Combobox>
     </div>
   );
 }

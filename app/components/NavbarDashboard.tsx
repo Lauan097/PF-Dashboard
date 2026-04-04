@@ -40,7 +40,7 @@ export default function SidebarDashboard() {
 
   const navItems = [
     { label: 'Início', icon: House, path: `/${guildId}` },
-    { label: 'Configurações', icon: Settings, path: `/${guildId}/server-config`, disabled: true },
+    { label: 'Configurações', icon: Settings, path: `/${guildId}/server-config` },
     { label: 'Editor V2', icon: Braces, path: `/${guildId}/editor-v2` },
     { label: 'Membros', icon: Users, path: `/${guildId}/members` },
     { label: 'Bate Ponto', icon: Clock, path: `/${guildId}/point-manager`, disabled: true },

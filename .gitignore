@@ -42,3 +42,6 @@ next-env.d.ts
 
 README.md
 dist
+package-lock.json
+yarn.lock
+.pnpm-lock.yaml

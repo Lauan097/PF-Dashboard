@@ -36,7 +36,7 @@ export const BlockWrapper = ({ children, className = "", style, actions = [] }: 
                       setTooltipIndex(null);
                       action.onClick();
                     }}
-                    className={`p-1.5 hover:bg-zinc-800 text-zinc-400 hover:text-white cursor-pointer ${action.variant === 'danger' ? 'hover:bg-red-900/50! hover:text-red-400!' : ''}`}
+                    className={`p-1.5 hover:bg-zinc-800 text-zinc-400 hover:text-white cursor-pointer rounded-md ${action.variant === 'danger' ? 'hover:bg-red-900/50! hover:text-red-400!' : ''}`}
                     {...(action['data-color-button'] && { 'data-color-button': true })}
                     onMouseEnter={() => setTooltipIndex(index)}
                     onMouseLeave={() => setTooltipIndex(null)}

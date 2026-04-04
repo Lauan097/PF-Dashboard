@@ -19,7 +19,8 @@ import ToolButton from './components/ToolButton';
 import ErrorPage from '@/app/components/ErrorPage';
 import { ModalToSend } from './components/ModalToSend';
 
-import { EditorBlock, BlockType } from '@/types/editor';
+import { EditorBlock, BlockType, TextBlockType, ImageBlockType, SeparatorBlockType, ContainerBlockType } from '@/types/editor';
+import { GuildData } from '@/types/globalData';
 import { SortableBlockItem } from './managers/SortableBlockItem';
 import { Skeleton } from '@/components/skeleton';
 import { VariantsPageTransition } from "@/utils/variants";
@@ -29,8 +30,8 @@ const createDefaultBlocks = (): EditorBlock[] => ([
 ]);
 
 export default function DiscordV2Editor() {
-  const [serverData, setServerData] = useState<any | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [serverData, setServerData] = useState<GuildData | null>(null);
+  const [apiFetched, setApiFetched] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentTime, setCurrentTime] = useState('');
   const [hasLoadedBlocks, setHasLoadedBlocks] = useState(false);
@@ -50,15 +51,14 @@ export default function DiscordV2Editor() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);
         const res = await fetch(`/api/data/guild?guildId=${guildId}&type=all`).then(r => r.json());
 
-        if (res.success) setTimeout(() => setServerData(res.data), 800);
+        if (res.success) setTimeout(() => { setServerData(res.data); setApiFetched(true); }, 500);
+        else setApiFetched(true);
       } catch (e) { 
         console.error(e); 
-        setError("Ocorreu um erro ao carregar dados do servidor."); 
-      } finally { 
-        setLoading(false); 
+        setError("Ocorreu um erro ao carregar dados do servidor.");
+        setApiFetched(true);
       }
     };
     if (guildId) fetchData();
@@ -73,13 +73,11 @@ export default function DiscordV2Editor() {
 
   useEffect(() => {
     if (!guildId) return;
-    setLoading(true);
     setHasLoadedBlocks(false);
     const saved = localStorage.getItem(storageKey);
     if (!saved) {
       setBlocks(createDefaultBlocks());
       setHasLoadedBlocks(true);
-      setLoading(false);
       return;
     }
 
@@ -90,7 +88,6 @@ export default function DiscordV2Editor() {
       setBlocks(createDefaultBlocks());
     }
     setHasLoadedBlocks(true);
-    setLoading(false);
   }, [guildId, storageKey]);
 
   useEffect(() => {
@@ -99,15 +96,16 @@ export default function DiscordV2Editor() {
   }, [blocks, guildId, storageKey, hasLoadedBlocks]);
 
   const addBlock = useCallback((type: BlockType, parentId?: string) => {
-    const newBlock: any = { id: Math.random().toString(36).substr(2, 9), type };
-    if (type === 'text') { newBlock.content = ['']; newBlock.thumbnail = null; }
-    else if (type === 'image') { newBlock.url = ''; }
-    else if (type === 'separator') { newBlock.spacing = 'small'; newBlock.hasDivider = true; }
-    else { newBlock.children = []; newBlock.accentColor = '#5865F2'; }
+    const id = Math.random().toString(36).substr(2, 9);
+    let newBlock: EditorBlock;
+    if (type === 'text')           newBlock = { id, type: 'text', content: [''], thumbnail: null } satisfies TextBlockType;
+    else if (type === 'image')     newBlock = { id, type: 'image', url: '' } satisfies ImageBlockType;
+    else if (type === 'separator') newBlock = { id, type: 'separator', spacing: 'small', hasDivider: true } satisfies SeparatorBlockType;
+    else                           newBlock = { id, type: 'container', children: [], accentColor: '#5865F2' } satisfies ContainerBlockType;
 
     setBlocks(prev => {
       if (!parentId) return [...prev, newBlock];
-      return prev.map(b => b.id === parentId && b.type === 'container' ? { ...b, children: [...b.children, newBlock] } : b);
+      return prev.map(b => b.id === parentId && b.type === 'container' ? { ...b, children: [...b.children, newBlock as TextBlockType | ImageBlockType | SeparatorBlockType] } : b);
     });
   }, []);
 
@@ -115,7 +113,7 @@ export default function DiscordV2Editor() {
     setBlocks(prev => {
       if (!parentId) return prev.map(b => b.id === id ? { ...b, ...data } : b) as EditorBlock[];
       return prev.map(b => b.id === parentId && b.type === 'container' ? 
-        { ...b, children: b.children.map(c => c.id === id ? { ...c, ...data } : c) as any } : b);
+        { ...b, children: b.children.map(c => c.id === id ? { ...c, ...data } : c) as (TextBlockType | ImageBlockType | SeparatorBlockType)[] } : b);
     });
   }, []);
 
@@ -200,7 +198,7 @@ export default function DiscordV2Editor() {
     });
   }, []);
 
-
+  const isReady = hasLoadedBlocks && apiFetched;
 
   if (error) {
     return (
@@ -252,22 +250,31 @@ export default function DiscordV2Editor() {
                   <span className="text-xs text-gray-400">Hoje às {currentTime || '--:--'}</span>
                 </div>
                 <div className="mt-1 space-y-1">
-                  <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                    <SortableContext items={blocks.map(b => b.id)} strategy={verticalListSortingStrategy}>
-                      {blocks.map(block => (
-                        <SortableBlockItem 
-                          key={block.id} 
-                          block={block} 
-                          onUpdate={updateBlock} 
-                          onRemove={removeBlock} 
-                          onAddChild={addBlock} 
-                          serverData={serverData} 
-                          sensors={sensors} 
-                          handleDragEnd={handleDragEnd} 
-                        />
-                      ))}
-                    </SortableContext>
-                  </DndContext>
+                  {!isReady ? (
+                    <div className="space-y-2 py-1">
+                      <Skeleton className="h-5 w-3/4 rounded" />
+                      <Skeleton className="h-5 w-1/2 rounded" />
+                      <Skeleton className="h-5 w-2/3 rounded" />
+                      <Skeleton className="h-34 w-full rounded" />
+                    </div>
+                  ) : (
+                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                      <SortableContext items={blocks.map(b => b.id)} strategy={verticalListSortingStrategy}>
+                        {blocks.map(block => (
+                          <SortableBlockItem 
+                            key={block.id} 
+                            block={block} 
+                            onUpdate={updateBlock} 
+                            onRemove={removeBlock} 
+                            onAddChild={addBlock} 
+                            serverData={serverData} 
+                            sensors={sensors} 
+                            handleDragEnd={handleDragEnd} 
+                          />
+                        ))}
+                      </SortableContext>
+                    </DndContext>
+                  )}
                 </div>
               </div>
             </div>

@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
+import Image from "next/image";
 
 import {
   EditorBlock,
@@ -8,17 +8,24 @@ import {
   ImageBlockType,
   SeparatorBlockType,
   ContainerBlockType,
-} from '@/types/editor';
-import { DiscordTextRenderer } from './DiscordTextRenderer';
+} from "@/types/editor";
+import { GuildData } from "@/types/globalData";
+import { DiscordTextRenderer } from "./DiscordTextRenderer";
 
 interface PreviewProps {
   blocks: EditorBlock[];
-  serverData: any;
+  serverData: GuildData | null;
   currentTime: string;
 }
 
-function PreviewTextBlock({ block, serverData }: { block: TextBlockType; serverData: any }) {
-  const text = block.content.join('\n');
+function PreviewTextBlock({
+  block,
+  serverData,
+}: {
+  block: TextBlockType;
+  serverData: GuildData | null;
+}) {
+  const text = block.content.join("\n");
   return (
     <div className="flex gap-3 text-[13px] text-[#dbdee1] leading-snug">
       <div className="flex-1 min-w-0 wrap-break-word">
@@ -64,39 +71,77 @@ function PreviewImageBlock({ block }: { block: ImageBlockType }) {
 
 function PreviewSeparatorBlock({ block }: { block: SeparatorBlockType }) {
   return (
-    <div className={`w-full flex items-center ${block.spacing === 'large' ? 'py-4' : 'py-1'}`}>
+    <div
+      className={`w-full flex items-center ${block.spacing === "large" ? "py-4" : "py-1"}`}
+    >
       {block.hasDivider && <div className="w-full h-px bg-zinc-600/50" />}
     </div>
   );
 }
 
-function PreviewContainerBlock({ block, serverData }: { block: ContainerBlockType; serverData: any }) {
+function PreviewContainerBlock({
+  block,
+  serverData,
+}: {
+  block: ContainerBlockType;
+  serverData: GuildData | null;
+}) {
   return (
     <div
       className="rounded-md overflow-hidden border-l-4 bg-[#2b2d31] w-fit"
-      style={{ borderLeftColor: block.accentColor || '#5865F2' }}
+      style={{ borderLeftColor: block.accentColor || "#5865F2" }}
     >
       <div className="p-3 space-y-2">
-        {block.children.map(child => (
-          <PreviewBlock key={child.id} block={child as EditorBlock} serverData={serverData} />
+        {block.children.map((child) => (
+          <PreviewBlock
+            key={child.id}
+            block={child as EditorBlock}
+            serverData={serverData}
+          />
         ))}
         {block.children.length === 0 && (
-          <div className="text-zinc-500 text-xs text-center py-2">Container vazio</div>
+          <div className="text-zinc-500 text-xs text-center py-2">
+            Container vazio
+          </div>
         )}
       </div>
     </div>
   );
 }
 
-function PreviewBlock({ block, serverData }: { block: EditorBlock; serverData: any }) {
-  if (block.type === 'text') return <PreviewTextBlock block={block as TextBlockType} serverData={serverData} />;
-  if (block.type === 'image') return <PreviewImageBlock block={block as ImageBlockType} />;
-  if (block.type === 'separator') return <PreviewSeparatorBlock block={block as SeparatorBlockType} />;
-  if (block.type === 'container') return <PreviewContainerBlock block={block as ContainerBlockType} serverData={serverData} />;
+function PreviewBlock({
+  block,
+  serverData,
+}: {
+  block: EditorBlock;
+  serverData: GuildData | null;
+}) {
+  if (block.type === "text")
+    return (
+      <PreviewTextBlock
+        block={block as TextBlockType}
+        serverData={serverData}
+      />
+    );
+  if (block.type === "image")
+    return <PreviewImageBlock block={block as ImageBlockType} />;
+  if (block.type === "separator")
+    return <PreviewSeparatorBlock block={block as SeparatorBlockType} />;
+  if (block.type === "container")
+    return (
+      <PreviewContainerBlock
+        block={block as ContainerBlockType}
+        serverData={serverData}
+      />
+    );
   return null;
 }
 
-export function DiscordPreviewMessage({ blocks, serverData, currentTime }: PreviewProps) {
+export function DiscordPreviewMessage({
+  blocks,
+  serverData,
+  currentTime,
+}: PreviewProps) {
   return (
     <div className="flex items-start gap-4 group/msg hover:bg-white/2 px-4 py-1.5 rounded-sm transition-colors duration-100">
       {/* Avatar */}
@@ -127,13 +172,19 @@ export function DiscordPreviewMessage({ blocks, serverData, currentTime }: Previ
           <span className="bg-[#5865F2] text-[9px] font-extrabold h-4 flex items-center text-white px-1 rounded-sm leading-none select-none">
             APP
           </span>
-          <span className="text-xs text-zinc-400">Hoje às {currentTime || '--:--'}</span>
+          <span className="text-xs text-zinc-400">
+            Hoje às {currentTime || "--:--"}
+          </span>
         </div>
 
         {/* Blocks */}
         <div className="space-y-1">
-          {blocks.map(block => (
-            <PreviewBlock key={block.id} block={block} serverData={serverData} />
+          {blocks.map((block) => (
+            <PreviewBlock
+              key={block.id}
+              block={block}
+              serverData={serverData}
+            />
           ))}
         </div>
       </div>
