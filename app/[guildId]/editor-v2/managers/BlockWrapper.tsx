@@ -45,7 +45,7 @@ export const BlockWrapper = ({ children, className = "", style, actions = [] }: 
                     {action.icon}
                   </button>
                 </Tooltip.Trigger>
-                <Tooltip.Content>
+                <Tooltip.Content className="px-3">
                   <p>{action.tooltip}</p>
                 </Tooltip.Content>
               </Tooltip>

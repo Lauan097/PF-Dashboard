@@ -8,7 +8,6 @@ import {
   Eye,
   Megaphone,
   SendHorizontal,
-  MessageSquareText,
   AlertCircle,
   CheckCircle2,
 } from "lucide-react";
@@ -18,6 +17,7 @@ import { TextChannelSelect } from "@/app/components/TextChannelSelect";
 import { DiscordPreviewMessage } from "./DiscordPreviewMessage";
 import { EditorBlock } from "@/types/editor";
 import { GuildData } from "@/types/globalData";
+import { Checkbox, Label } from "@heroui/react";
 
 import { motion } from "framer-motion";
 
@@ -38,6 +38,8 @@ export function ModalToSend({
 }: ModalToSendProps) {
   const [channelSend, setChannelSend] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [checkboxValue, setCheckboxValue] = useState(false);
+  const [newMention, setNewMention] = useState(false);
   const [modalContainer, setModalContainer] = useState<HTMLDivElement | null>(
     null,
   );
@@ -52,7 +54,13 @@ export function ModalToSend({
         const res = await fetch("/api/data/guild/send-message", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ guildId, channelId: target, blocks }),
+          body: JSON.stringify({ 
+            guildId, 
+            channelId: target, 
+            blocks, 
+            editLastMessage: checkboxValue,
+            renewMention: newMention,
+          }),
         });
 
         if (!res.ok) throw new Error("Resposta inválida do servidor");
@@ -64,7 +72,7 @@ export function ModalToSend({
         setIsSending(false);
       }
     },
-    [channelSend, guildId, isSending, blocks],
+    [channelSend, guildId, isSending, blocks, checkboxValue, newMention],
   );
 
   useEffect(() => {
@@ -91,11 +99,14 @@ export function ModalToSend({
   }, [validation.errors, serverData, handleSendMessage]);
 
   const hasErrors = validation.errors.length > 0;
-  const channels = (serverData?.channels ?? []).map((c) => ({
-    id: c.id,
-    name: c.name,
-    type: c.type ?? 0,
-  }));
+
+  const channels = (serverData?.channels ?? [])
+    .filter((c) => c.type === 0 || c.type === 5)
+    .map((c) => ({
+      id: c.id,
+      name: c.name,
+      type: c.type ?? 0,
+    }));
 
   return (
     <motion.div>
@@ -103,7 +114,7 @@ export function ModalToSend({
         <Modal.Trigger>
           <div>
             <TooltipButton
-              className="bg-neutral-900/40 hover:bg-white/5 cursor-pointer p-2 w-10"
+              buttonClassName="bg-neutral-900/40 hover:bg-white/5 cursor-pointer p-2 w-10"
               icon={<Send />}
               tooltipText="Enviar"
               tooltipSide="left"
@@ -113,11 +124,11 @@ export function ModalToSend({
 
         <Modal.Backdrop>
           <Modal.Container size="cover">
-            <Modal.Dialog className="flex flex-col h-full bg-[#313338] text-gray-100 outline-none">
+            <Modal.Dialog className="flex flex-col h-full bg-[#313338] text-gray-100 outline-none rounded-xl">
               <div ref={setModalContainer} className="contents">
                 <Modal.Header className="flex items-center justify-between px-6 py-4 border-b border-zinc-700/40 shrink-0">
                   <div className="flex items-center gap-2 font-semibold text-base">
-                    <MessageSquareText size={18} className="text-[#5865F2]" />
+                    <Send size={18} className="text-[#5865F2]" />
                     <span>Enviar Mensagem</span>
                   </div>
                   <div className="flex items-center gap-3">
@@ -139,22 +150,22 @@ export function ModalToSend({
                 </Modal.Header>
 
                 <div className="flex flex-1 overflow-hidden">
-                  <div className="flex-1 overflow-y-auto bg-[#313338] py-6">
-                    <div className="max-w-3xl mx-auto w-full">
-                      <p className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider px-4 mb-4 select-none">
-                        Prévia da Mensagem
-                      </p>
+                  <div className="flex-1 overflow-y-auto py-6">
+                    <p className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider px-4 mb-4 select-none flex items-center justify-center gap-1">
+                      Prévia da Mensagem
+                    </p>
+                    <div className="max-w-4xl mx-auto w-full bg-[#383A40] p-6 rounded-xl">
 
                       {/* Fake Discord channel header 
-                    <div className="px-4 mb-2 flex items-center gap-2 select-none">
-                      <div className="w-4 h-4 text-zinc-400">
-                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
-                          <path d="M5.88 2.25a.75.75 0 0 1 .75.75v.5h11.25v-.5a.75.75 0 0 1 1.5 0v.5H20a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h.63v-.5a.75.75 0 0 1 .75-.75Z"/>
-                        </svg>
-                      </div>
-                      <span className="text-zinc-400 text-sm font-medium">anúncios-preview</span>
-                    </div>
-                    */}
+                        <div className="px-4 mb-2 flex items-center gap-2 select-none">
+                          <div className="w-4 h-4 text-zinc-400">
+                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
+                              <path d="M5.88 2.25a.75.75 0 0 1 .75.75v.5h11.25v-.5a.75.75 0 0 1 1.5 0v.5H20a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h.63v-.5a.75.75 0 0 1 .75-.75Z"/>
+                            </svg>
+                          </div>
+                          <span className="text-zinc-400 text-sm font-medium">anúncios-preview</span>
+                        </div>
+                      */}
 
                       <div className="px-4 mb-4">
                         <div className="flex items-center gap-2">
@@ -186,7 +197,7 @@ export function ModalToSend({
                               hasErrors ||
                               !serverData?.serverConfig?.announcementsPreviewCh
                             }
-                            className="bg-zinc-700/50 hover:bg-zinc-600 cursor-pointer text-xs w-full"
+                            buttonClassName="bg-zinc-700/50 hover:bg-zinc-600 cursor-pointer text-xs w-full"
                             onClick={() =>
                               handleSendMessage(
                                 serverData?.serverConfig
@@ -203,7 +214,7 @@ export function ModalToSend({
                               hasErrors ||
                               !serverData?.serverConfig?.announcementsCh
                             }
-                            className="bg-zinc-700/50 hover:bg-zinc-600 cursor-pointer text-xs w-full"
+                            buttonClassName="bg-zinc-700/50 hover:bg-zinc-600 cursor-pointer text-xs w-full"
                             onClick={() =>
                               handleSendMessage(
                                 serverData?.serverConfig?.announcementsCh ??
@@ -238,13 +249,14 @@ export function ModalToSend({
                             placeholder="Selecione um canal..."
                             className="w-full"
                             container={modalContainer}
+                            disabled={hasErrors || isSending}
                           />
                           <button
                             disabled={hasErrors || !channelSend || isSending}
                             onClick={() => handleSendMessage()}
-                            className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-sm font-medium transition-colors duration-150
+                            className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md text-sm font-medium transition-colors duration-150
                             bg-[#5865F2] hover:bg-[#4752C4] text-white
-                            disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-zinc-700"
+                            disabled:opacity-40 disabled:bg-zinc-700 cursor-pointer disabled:cursor-auto"
                           >
                             <SendHorizontal size={14} />
                             {isSending ? "Enviando…" : "Enviar"}
@@ -272,7 +284,49 @@ export function ModalToSend({
                         </div>
                       )}
 
-                      <div className="bg-zinc-800/40 rounded-md p-3 space-y-1.5">
+                      <div>
+                        <Checkbox
+                          id="edit-message"
+                          isSelected={checkboxValue}
+                          onChange={setCheckboxValue}
+                          isDisabled={hasErrors || isSending}
+                          className="gap-2 mb-2"
+                        >
+                          <Checkbox.Control className="size-5 rounded-sm before:rounded-sm before:bg-blue-600">
+                            <Checkbox.Indicator />
+                          </Checkbox.Control>
+                          <Checkbox.Content>
+                            <Label
+                              className="text-xs text-zinc-400"
+                              htmlFor="edit-message"
+                            >
+                              Editar mensagem anterior
+                            </Label>
+                          </Checkbox.Content>
+                        </Checkbox>
+
+                        <Checkbox
+                          id="new-mention"
+                          isSelected={newMention}
+                          onChange={setNewMention}
+                          isDisabled={hasErrors || isSending || !checkboxValue}
+                          className="gap-2"
+                        >
+                          <Checkbox.Control className="size-5 rounded-sm before:rounded-sm before:bg-blue-600">
+                            <Checkbox.Indicator />
+                          </Checkbox.Control>
+                          <Checkbox.Content>
+                            <Label
+                              className="text-xs text-zinc-400"
+                              htmlFor="new-mention"
+                            >
+                              Mencionar @everyone novamente
+                            </Label>
+                          </Checkbox.Content>
+                        </Checkbox>
+                      </div>
+
+                      <div className="bg-zinc-800 rounded-md p-3 space-y-1.5">
                         <p className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-2 select-none">
                           Estatísticas
                         </p>

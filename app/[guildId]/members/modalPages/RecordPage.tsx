@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Button } from "@heroui/react";
+import { Button } from "@/components/button";
 import { TooltipButton } from "@/app/components/TooltipButton";
 import { CircleAlert, Download, UserRoundPen } from "lucide-react";
 import type { MemberRecord } from "@/types/user";
@@ -75,8 +75,8 @@ export default function MemberRecordPage({ userId, guildId }: MemberRecordPagePr
       <div className="flex flex-col sm:flex-row bg-[#171717] border border-zinc-800 px-2 py-8 md:p-4">
         <h1 className="text-lg font-bold tracking-wide text-zinc-300">Ficha de Registro Operacional</h1>
         <div className="sm:ml-auto space-x-2 pt-4 sm:pt-0 items-center flex">
-          <Button isDisabled variant="tertiary"><UserRoundPen size={14} /> Editar</Button>
-          <TooltipButton disabled variant="tertiary" text="Baixar" tooltipText="Arquivo PDF" icon={<Download size={14} />} />
+          <Button disabled><UserRoundPen size={14} /> Editar</Button>
+          <TooltipButton disabled text="Baixar" tooltipText="Arquivo PDF" icon={<Download size={14} />} />
         </div>
       </div>
       <div className="bg-[#171717] border border-zinc-800 px-2 py-8 md:p-8 shadow-2xl relative">

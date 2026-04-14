@@ -17,7 +17,6 @@ import type {
   ServerConfigPayload,
 } from "@/types/serverConfig";
 
-// -------- helpers --------
 const empty = (): ServerConfigPayload => ({
   channels: {
     welcome: null,
@@ -66,7 +65,6 @@ function payloadsEqual(a: ServerConfigPayload, b: ServerConfigPayload) {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
-// -------- sub-components --------
 interface SectionProps {
   icon: React.ReactNode;
   title: string;
@@ -103,7 +101,6 @@ function FieldSkeleton() {
   );
 }
 
-// -------- page --------
 export default function ServerConfigPage() {
   const params = useParams();
   const guildId = params.guildId as string;

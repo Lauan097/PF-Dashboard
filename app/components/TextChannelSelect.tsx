@@ -1,4 +1,4 @@
-﻿'use client';
+﻿"use client";
 
 import { useState, useMemo } from "react";
 import {
@@ -15,6 +15,7 @@ import { normalizeText } from "@/utils/textUtils";
 interface Channels {
   id: string;
   name: string;
+  color?: number;
   position?: number;
 }
 
@@ -27,6 +28,7 @@ interface TextChannelSelectProps {
   className?: string;
   type?: "text" | "roles";
   container?: HTMLElement | null;
+  disabled?: boolean;
 }
 
 export function TextChannelSelect({
@@ -38,18 +40,23 @@ export function TextChannelSelect({
   className = "",
   type = "text",
   container,
+  disabled = false,
 }: TextChannelSelectProps) {
   const [searchText, setSearchText] = useState("");
 
   const selectedName = channels.find((c) => c.id === value)?.name ?? "";
 
-  // Base UI sem `items` prop não filtra automaticamente — fazemos manualmente
   const filteredChannels = useMemo(() => {
     if (!searchText) return channels;
     return channels.filter((c) =>
-      normalizeText(c.name).includes(normalizeText(searchText))
+      normalizeText(c.name).includes(normalizeText(searchText)),
     );
   }, [channels, searchText]);
+
+  const getRoleColor = (color: number | undefined) => {
+    if (!color || color === 0) return "inherit";
+    return `#${color.toString(16).padStart(6, "0")}`;
+  };
 
   return (
     <div className={className}>
@@ -77,6 +84,7 @@ export function TextChannelSelect({
           placeholder={placeholder}
           showClear={!!value}
           className="w-full"
+          disabled={disabled}
         />
         <ComboboxContent container={container}>
           <ComboboxList>
@@ -85,10 +93,20 @@ export function TextChannelSelect({
                 key={channel.id}
                 value={channel.name}
                 className="text-md font-medium text-zinc-300/90"
+                style={{
+                  color:
+                    type === "roles" ? getRoleColor(channel.color) : undefined,
+                }}
               >
                 <DiscordIcon
                   name={type === "roles" ? "roles" : "text"}
-                  className="shrink-0 text-zinc-400"
+                  className="shrink-0"
+                  style={{
+                    color:
+                      type === "roles"
+                        ? getRoleColor(channel.color)
+                        : "text-zinc-400",
+                  }}
                 />
                 {channel.name}
               </ComboboxItem>

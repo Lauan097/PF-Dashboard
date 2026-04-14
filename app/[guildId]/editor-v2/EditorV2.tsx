@@ -22,11 +22,11 @@ import { ModalToSend } from './components/ModalToSend';
 import { EditorBlock, BlockType, TextBlockType, ImageBlockType, SeparatorBlockType, ContainerBlockType } from '@/types/editor';
 import { GuildData } from '@/types/globalData';
 import { SortableBlockItem } from './managers/SortableBlockItem';
-import { Skeleton } from '@/components/skeleton';
+import { Skeleton } from '@heroui/react';
 import { VariantsPageTransition } from "@/utils/variants";
 
 const createDefaultBlocks = (): EditorBlock[] => ([
-  { id: '1', type: 'text', content: ['Bem-vindo ao Editor V2.'], thumbnail: null }
+  { id: '1', type: 'text', content: ['Bem-vindo ao Editor V2!\n\nUse "@" para mencionar um usuário(a) ou um cargo.\nUse "#" para mencionar um canal.\nUse ";" para inserir um emoji.\nUse "\\" para inserir a data atual formatada.'], thumbnail: null }
 ]);
 
 export default function DiscordV2Editor() {

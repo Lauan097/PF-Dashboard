@@ -27,7 +27,7 @@ function PreviewTextBlock({
 }) {
   const text = block.content.join("\n");
   return (
-    <div className="flex gap-3 text-[13px] text-[#dbdee1] leading-snug">
+    <div className="flex gap-3 text-[13px] text-[#dbdee1] leading-snug w-full">
       <div className="flex-1 min-w-0 wrap-break-word">
         <DiscordTextRenderer text={text} serverData={serverData} />
       </div>
@@ -55,7 +55,7 @@ function PreviewImageBlock({ block }: { block: ImageBlockType }) {
     );
   }
   return (
-    <div className="rounded-lg overflow-hidden max-w-full w-fit">
+    <div className="rounded-lg overflow-hidden max-w-full w-full">
       <Image
         src={block.url}
         alt="Block image"
@@ -88,7 +88,7 @@ function PreviewContainerBlock({
 }) {
   return (
     <div
-      className="rounded-md overflow-hidden border-l-4 bg-[#2b2d31] w-fit"
+      className="rounded-md overflow-hidden border-l-4 bg-[#2b2d31] w-full"
       style={{ borderLeftColor: block.accentColor || "#5865F2" }}
     >
       <div className="p-3 space-y-2">
@@ -143,8 +143,7 @@ export function DiscordPreviewMessage({
   currentTime,
 }: PreviewProps) {
   return (
-    <div className="flex items-start gap-4 group/msg hover:bg-white/2 px-4 py-1.5 rounded-sm transition-colors duration-100">
-      {/* Avatar */}
+    <div className="flex items-start gap-4 group/msg px-4 py-1.5 rounded-sm transition-colors duration-100">
       <div className="shrink-0 mt-1">
         {serverData?.botAvatar ? (
           <Image
@@ -160,16 +159,14 @@ export function DiscordPreviewMessage({
         )}
       </div>
 
-      {/* Message content */}
       <div className="flex-1 min-w-0">
-        {/* Header row */}
-        <div className="flex items-center gap-2 mb-1 flex-wrap">
-          <span className="font-medium text-white text-sm hover:underline cursor-pointer">
+        <div className="flex items-center mb-1 flex-wrap">
+          <span className="font-medium text-white text-sm hover:underline cursor-pointer mr-1">
             {serverData?.botName ?? (
               <span className="inline-block w-24 h-4 rounded bg-zinc-700 animate-pulse" />
             )}
           </span>
-          <span className="bg-[#5865F2] text-[9px] font-extrabold h-4 flex items-center text-white px-1 rounded-sm leading-none select-none">
+          <span className="bg-[#5865F2] text-[10px] font-extrabold h-3.75 mr-2 flex items-center text-white px-1 rounded-xs leading-none select-none">
             APP
           </span>
           <span className="text-xs text-zinc-400">
@@ -177,8 +174,7 @@ export function DiscordPreviewMessage({
           </span>
         </div>
 
-        {/* Blocks */}
-        <div className="space-y-1">
+        <div className="space-y-1 w-fit max-w-full">
           {blocks.map((block) => (
             <PreviewBlock
               key={block.id}

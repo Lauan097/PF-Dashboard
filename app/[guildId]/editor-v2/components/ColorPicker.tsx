@@ -74,9 +74,9 @@ export default function ColorPicker({
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+      initial={{ opacity: 0, y: 10, scale: 0.80 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+      exit={{ opacity: 0, y: 10, scale: 0.80 }}
       transition={{ duration: 0.15, ease: "easeOut" }}
       className="space-y-2 bg-neutral-900 p-4 rounded-lg font-rajdhani font-semibold max-w-45.5" 
       onClick={(e) => e.stopPropagation()}

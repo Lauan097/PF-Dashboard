@@ -1,13 +1,8 @@
 'use client';
 
 import { Button, ButtonProps, PressEvent } from "@heroui/react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@heroui/react"
+import { Tooltip } from "@heroui/react"
 import { cn } from "@/lib/utils";
-import { Kbd } from "@heroui/react";
 import { ReactNode, useState } from "react"
 
 interface TooltipButtonProps extends Omit<ButtonProps, 'size' | 'variant'> {
@@ -52,12 +47,12 @@ export function TooltipButton({
 
   return (
     <Tooltip closeDelay={0} isOpen={isTooltipOpen}>
-      <TooltipTrigger>
+      <Tooltip.Trigger>
         <Button 
           isIconOnly={IconOnly}
           size={size}
           variant={variant}
-          className={cn('', buttonClassName)}
+          className={cn(buttonClassName, "rounded-md")}
           onPress={handleClick}
           isDisabled={disabled}
           onMouseEnter={() => setIsTooltipOpen(true)}
@@ -68,19 +63,22 @@ export function TooltipButton({
           {icon}
           {text}
         </Button>
-      </TooltipTrigger>
+      </Tooltip.Trigger>
       {activeTool && (
-        <TooltipContent placement={tooltipSide} className={cn("bg-neutral-900 border border-neutral-800 flex items-center", tooltipClassName)}>
+        <Tooltip.Content 
+          placement={tooltipSide} 
+          className={cn("bg-neutral-900 border border-neutral-800 flex items-center gap-2 px-3", tooltipClassName)}
+        >
           {tooltipText && (
             <p>{tooltipText}</p>
           )}
           {kdbText && (
             <div>
               {kdbContent ? kdbContent : ''}
-              <Kbd className="bg-[#3d3d3d] text-gray-300">{kdbText}</Kbd>
+              <kbd className="bg-[#3d3d3d] text-gray-300">{kdbText}</kbd>
             </div>
           )}
-        </TooltipContent>
+        </Tooltip.Content>
       )}
     </Tooltip>
   )

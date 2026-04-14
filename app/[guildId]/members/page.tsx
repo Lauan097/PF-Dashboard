@@ -177,7 +177,7 @@ export default function MembersPage() {
                   isIconOnly
                   icon={<Filter />}
                   tooltipText="Filtrar"
-                  className={`bg-[#18181B] border cursor-pointer transition-colors ${statusFilter ? "border-blue-500/50 text-blue-400" : "border-[#3d3d3d] hover:bg-neutral-800/60 text-white/50 hover:text-white"}`}
+                  buttonClassName={`bg-[#18181B] border cursor-pointer transition-colors ${statusFilter ? "border-blue-500/50 text-blue-400" : "border-[#3d3d3d] hover:bg-neutral-800/60 text-white/50 hover:text-white"}`}
                 />
               </div>
               <Dropdown.Popover
@@ -283,7 +283,7 @@ export default function MembersPage() {
                 />
               }
               tooltipText="Atualizar"
-              className="bg-[#18181B] hover:bg-neutral-800/60 border border-[#3d3d3d] cursor-pointer text-white/50 hover:text-white"
+              buttonClassName="bg-[#18181B] hover:bg-neutral-800/60 border border-[#3d3d3d] cursor-pointer text-white/50 hover:text-white"
             />
           </div>
         </div>

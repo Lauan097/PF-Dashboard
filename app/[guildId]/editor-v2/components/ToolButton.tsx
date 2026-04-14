@@ -15,7 +15,7 @@ function ToolButton({ icon: Icon, label, onClick, active, send }: ToolButtonProp
       tooltipText={label}
       tooltipSide='left'
       icon={<Icon size={16} />}
-      className={`flex flex-col items-center gap-1 p-2 w-10 transition-all group relative cursor-pointer bg-neutral-900/40 hover:bg-white/5
+      buttonClassName={`flex flex-col items-center gap-1 p-2 w-10 transition-all group relative cursor-pointer bg-neutral-900/40 hover:bg-white/5
           ${active ? 'text-indigo-500 hover:text-indigo-400' : 'text-zinc-500 hover:text-zinc-200'}
           ${send ? 'text-indigo-500! hover:text-indigo-400!' : ''}
       `}

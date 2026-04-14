@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams, usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Button, Dropdown, DropdownTrigger, DropdownPopover, DropdownMenu, DropdownItem, Separator } from "@heroui/react";
+import { Button, Dropdown, Separator } from "@heroui/react";
 import { 
   House, Braces, Settings, PanelLeftClose, LogOut, ChevronsUpDown, CreditCard, 
   Users, Clock 
@@ -157,7 +157,7 @@ export default function SidebarDashboard() {
                   router.push(item.path);
                   if (isMobile) setIsMobileOpen(false);
                 }}
-                className={cn(`flex items-center justify-start overflow-hidden hover:bg-white/5 ${isCollapsed ? "" : "w-full"} gap-3 cursor-pointer`,
+                className={cn(`flex items-center justify-start rounded-md overflow-hidden hover:bg-white/5 ${isCollapsed ? "" : "w-full"} gap-3 cursor-pointer`,
                   `${pathname === item.path ? 'bg-white/5' : '' }`
                 )}
                 disabled={item.disabled}
@@ -168,9 +168,9 @@ export default function SidebarDashboard() {
 
         <div className="mt-auto pt-4 border-t border-white/5">
           <Dropdown isOpen={open} onOpenChange={setOpen}>
-            <DropdownTrigger
+            <Dropdown.Trigger
               className={cn(
-                `flex items-center h-12 px-2 py-2 space-x-3 rounded-full transition-colors overflow-hidden`,
+                `flex items-center h-12 px-2 py-2 space-x-3 rounded-md transition-colors overflow-hidden`,
                 isCollapsed ? 'hover:bg-white/5 w-fit' : 'min-w-60 bg-white/3 hover:bg-white/5',
                 open ? 'bg-white/5' : ''
               )}
@@ -200,9 +200,12 @@ export default function SidebarDashboard() {
                   </motion.div>
                 )}
               </AnimatePresence>
-            </DropdownTrigger>
+            </Dropdown.Trigger>
 
-            <DropdownPopover placement={isCollapsed ? "top start" : "top"}>
+            <Dropdown.Popover 
+              placement={isCollapsed ? "top start" : "top"}
+              className="rounded-md"
+            >
               <div className="flex items-center space-x-2 select-none px-3 py-2 border-b border-white/5">
                 <Image
                   src={session?.user?.image || 'https://cdn.discordapp.com/embed/avatars/1.png'}
@@ -216,38 +219,35 @@ export default function SidebarDashboard() {
                   <span className="truncate text-xs text-gray-400 w-full">{session?.user?.email || "Email"}</span>
                 </div>
               </div>
-              <DropdownMenu aria-label="User menu">
-                <DropdownItem
+              <Dropdown.Menu aria-label="User menu">
+                <Dropdown.Item
                   id="plan"
                   onPress={() => router.push(`/${guildId}/plan`)}
                   isDisabled
+                  className="rounded-md"
                 >
-                  <div className="flex items-center gap-2">
-                    <CreditCard className="h-4 w-4" />
-                    Assinatura
-                  </div>
-                </DropdownItem>
-                <DropdownItem
+                  <CreditCard className="h-4 w-4" />
+                  Assinatura
+                </Dropdown.Item>
+                <Dropdown.Item
                   id="settings"
                   onPress={() => toast.info('Disponível em breve!')}
+                  className="rounded-md"
                 >
-                  <div className="flex items-center gap-2">
-                    <Settings className="h-4 w-4" />
-                    Configurações
-                  </div>
-                </DropdownItem>
-                <Separator />
-                <DropdownItem
+                  <Settings className="h-4 w-4" />
+                  Configurações
+                </Dropdown.Item>
+                <Separator className="my-0.5 mx-auto w-full bg-white/5" />
+                <Dropdown.Item
                   id="logout"
                   onPress={() => { window.location.href = "https://pflegacy.xyz"; }}
+                  className="hover:bg-red-600/10 text-red-400 hover:text-red-400 rounded-md"
                 >
-                  <div className="flex items-center gap-2 text-red-400">
-                    <LogOut className="h-4 w-4" />
-                    Sair do Dashboard
-                  </div>
-                </DropdownItem>
-              </DropdownMenu>
-            </DropdownPopover>
+                  <LogOut className="h-4 w-4" />
+                  Sair do Dashboard
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown.Popover>
           </Dropdown>
         </div>
       </motion.aside>
