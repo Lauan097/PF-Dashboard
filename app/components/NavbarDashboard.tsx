@@ -1,12 +1,19 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams, usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Button, Dropdown, Separator } from "@heroui/react";
-import { 
-  House, Braces, Settings, PanelLeftClose, LogOut, ChevronsUpDown, CreditCard, 
-  Users, Clock 
+import {
+  House,
+  Braces,
+  Settings,
+  PanelLeftClose,
+  LogOut,
+  ChevronsUpDown,
+  CreditCard,
+  Users,
+  Clock,
 } from "lucide-react";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { TooltipButton } from "@/app/components/TooltipButton";
@@ -23,7 +30,7 @@ export default function SidebarDashboard() {
   const [isMobile, setIsMobile] = useState(false);
   const [open, setOpen] = useState(false);
   const [guilds, setGuilds] = useState<GuildData[]>([]);
-  
+
   const params = useParams();
   const router = useRouter();
   const guildId = params.guildId as string;
@@ -39,11 +46,20 @@ export default function SidebarDashboard() {
   }, []);
 
   const navItems = [
-    { label: 'Início', icon: House, path: `/${guildId}` },
-    { label: 'Configurações', icon: Settings, path: `/${guildId}/server-config` },
-    { label: 'Editor V2', icon: Braces, path: `/${guildId}/editor-v2` },
-    { label: 'Membros', icon: Users, path: `/${guildId}/members` },
-    { label: 'Bate Ponto', icon: Clock, path: `/${guildId}/point-manager`, disabled: true },
+    { label: "Início", icon: House, path: `/${guildId}` },
+    {
+      label: "Configurações",
+      icon: Settings,
+      path: `/${guildId}/server-config`,
+    },
+    { label: "Editor V2", icon: Braces, path: `/${guildId}/editor-v2` },
+    { label: "Membros", icon: Users, path: `/${guildId}/members` },
+    {
+      label: "Bate Ponto",
+      icon: Clock,
+      path: `/${guildId}/point-manager`,
+      disabled: true,
+    },
   ];
 
   useEffect(() => {
@@ -53,26 +69,31 @@ export default function SidebarDashboard() {
         setIsMobileOpen(false);
       }
     };
-    
+
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+  const handleDragEnd = (
+    event: MouseEvent | TouchEvent | PointerEvent,
+    info: PanInfo,
+  ) => {
     if (isMobile) {
       if (info.offset.x < -50) setIsMobileOpen(false);
     }
   };
 
-  const sidebarAnimation = isMobile  ? { x: isMobileOpen ? 0 : "-100%", width: 280 } : { width: isCollapsed ? 72 : 266, x: 0 };
+  const sidebarAnimation = isMobile
+    ? { x: isMobileOpen ? 0 : "-100%", width: 280 }
+    : { width: isCollapsed ? 72 : 266, x: 0 };
 
   if (pathname?.startsWith("/login")) return null;
-  
+
   return (
     <>
       {isMobile && !isMobileOpen && (
-        <motion.div 
+        <motion.div
           className="fixed top-0 left-0 bottom-0 w-8 z-50 bg-transparent"
           onPanEnd={(e, info) => {
             if (info.offset.x > 50) setIsMobileOpen(true);
@@ -97,7 +118,7 @@ export default function SidebarDashboard() {
         animate={sidebarAnimation}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
         onPanEnd={handleDragEnd}
-        className={`h-screen bg-[#171717] border-transparent flex flex-col px-2 py-2 z-40 overflow-hidden ${isMobile ? "fixed top-0 left-0 shadow-2xl" : "sticky top-0"}`}
+        className={`h-screen bg-[#171717] border-transparent flex flex-col px-2 py-2 pr-5 z-40 overflow-hidden ${isMobile ? "fixed top-0 left-0 shadow-2xl" : "sticky top-0"}`}
       >
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
@@ -109,40 +130,40 @@ export default function SidebarDashboard() {
 
         <AnimatePresence initial={false}>
           <div className="flex items-center mb-4">
-            <ServerSelect 
-              servers={guilds} 
-              value={guildId} 
-              mode={isCollapsed ? 1 : 0} 
+            <ServerSelect
+              servers={guilds}
+              value={guildId}
+              mode={isCollapsed ? 1 : 0}
             />
 
             {isMobile && (
-               <Button 
-               variant="ghost" 
-               size="sm" 
-               onClick={() => setIsMobileOpen(false)}
-               className="text-gray-400 hover:bg-white/5 hover:text-white ml-auto"
-             >
-               <PanelLeftClose />
-             </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsMobileOpen(false)}
+                className="text-gray-400 hover:bg-white/5 hover:text-white ml-auto"
+              >
+                <PanelLeftClose />
+              </Button>
             )}
           </div>
         </AnimatePresence>
 
-        <nav className="flex-1 flex flex-col gap-2 border-t border-white/5 pt-4">
-          <div className="max-w-60 space-y-1">
+        <nav className="flex-1 border-t border-white/5 pt-4 overflow-hidden">
+          <div className="flex flex-col gap-1 w-full overflow-hidden ">
             {navItems.map((item) => (
               <TooltipButton
                 key={item.path}
                 activeTool={isCollapsed ? true : false}
                 icon={<item.icon className="h-5 w-5 min-w-5 shrink-0" />}
                 text={
-                  <AnimatePresence>
+                  <AnimatePresence mode="wait">
                     {(!isCollapsed || isMobile) && (
                       <motion.span
-                        initial={{ width: 0, opacity: 0 }}
-                        animate={{ width: "auto", opacity: 1 }}
-                        exit={{ width: 0, opacity: 0 }}
-                        className="overflow-hidden whitespace-nowrap block"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="overflow-hidden whitespace-nowrap block flex-1 text-left"
                       >
                         {item.label}
                       </motion.span>
@@ -157,8 +178,9 @@ export default function SidebarDashboard() {
                   router.push(item.path);
                   if (isMobile) setIsMobileOpen(false);
                 }}
-                className={cn(`flex items-center justify-start rounded-md overflow-hidden hover:bg-white/5 ${isCollapsed ? "" : "w-full"} gap-3 cursor-pointer`,
-                  `${pathname === item.path ? 'bg-white/5' : '' }`
+                className={cn(
+                  `flex items-center justify-start rounded-md overflow-hidden hover:bg-white/5 w-full gap-3 cursor-pointer h-10 px-3.5`,
+                  `${pathname === item.path ? "bg-white/5" : ""}`,
                 )}
                 disabled={item.disabled}
               />
@@ -171,13 +193,18 @@ export default function SidebarDashboard() {
             <Dropdown.Trigger
               className={cn(
                 `flex items-center h-12 px-2 py-2 space-x-3 rounded-md transition-colors overflow-hidden`,
-                isCollapsed ? 'hover:bg-white/5 w-fit' : 'min-w-60 bg-white/3 hover:bg-white/5',
-                open ? 'bg-white/5' : ''
+                isCollapsed
+                  ? "hover:bg-white/5 w-fit"
+                  : "min-w-60 bg-white/3 hover:bg-white/5",
+                open ? "bg-white/5" : "",
               )}
             >
               <div className="shrink-0">
                 <Image
-                  src={session?.user?.image || 'https://cdn.discordapp.com/embed/avatars/1.png'} 
+                  src={
+                    session?.user?.image ||
+                    "https://cdn.discordapp.com/embed/avatars/1.png"
+                  }
                   alt="Avatar do Usuário"
                   width={512}
                   height={512}
@@ -194,7 +221,9 @@ export default function SidebarDashboard() {
                     className="flex flex-1 items-center justify-between overflow-hidden whitespace-nowrap"
                   >
                     <div className="flex flex-col items-start min-w-0 pr-2">
-                      <span className="truncate text-sm w-full">{session?.user?.name || "Usuário"}</span>
+                      <span className="truncate text-sm w-full">
+                        {session?.user?.name || "Usuário"}
+                      </span>
                     </div>
                     <ChevronsUpDown className="shrink-0 h-5 w-5 text-gray-400" />
                   </motion.div>
@@ -202,21 +231,28 @@ export default function SidebarDashboard() {
               </AnimatePresence>
             </Dropdown.Trigger>
 
-            <Dropdown.Popover 
+            <Dropdown.Popover
               placement={isCollapsed ? "top start" : "top"}
               className="rounded-md"
             >
               <div className="flex items-center space-x-2 select-none px-3 py-2 border-b border-white/5">
                 <Image
-                  src={session?.user?.image || 'https://cdn.discordapp.com/embed/avatars/1.png'}
+                  src={
+                    session?.user?.image ||
+                    "https://cdn.discordapp.com/embed/avatars/1.png"
+                  }
                   alt="Avatar do Usuário"
                   width={512}
                   height={512}
                   className="h-8 w-8 rounded-full bg-blue-500/60 shrink-0"
                 />
                 <div className="flex flex-col items-start min-w-0">
-                  <span className="truncate text-sm w-full">{session?.user?.name || "Usuário"}</span>
-                  <span className="truncate text-xs text-gray-400 w-full">{session?.user?.email || "Email"}</span>
+                  <span className="truncate text-sm w-full">
+                    {session?.user?.name || "Usuário"}
+                  </span>
+                  <span className="truncate text-xs text-gray-400 w-full">
+                    {session?.user?.email || "Email"}
+                  </span>
                 </div>
               </div>
               <Dropdown.Menu aria-label="User menu">
@@ -231,7 +267,7 @@ export default function SidebarDashboard() {
                 </Dropdown.Item>
                 <Dropdown.Item
                   id="settings"
-                  onPress={() => toast.info('Disponível em breve!')}
+                  onPress={() => toast.info("Disponível em breve!")}
                   className="rounded-md"
                 >
                   <Settings className="h-4 w-4" />
@@ -240,7 +276,9 @@ export default function SidebarDashboard() {
                 <Separator className="my-0.5 mx-auto w-full bg-white/5" />
                 <Dropdown.Item
                   id="logout"
-                  onPress={() => { window.location.href = "https://pflegacy.xyz"; }}
+                  onPress={() => {
+                    window.location.href = "https://pflegacy.xyz";
+                  }}
                   className="hover:bg-red-600/10 text-red-400 hover:text-red-400 rounded-md"
                 >
                   <LogOut className="h-4 w-4" />

@@ -1,42 +1,50 @@
-'use client';
+"use client";
 
 import { Button, ButtonProps, PressEvent } from "@heroui/react";
-import { Tooltip } from "@heroui/react"
+import { Tooltip } from "@heroui/react";
 import { cn } from "@/lib/utils";
-import { ReactNode, useState } from "react"
+import { ReactNode, useState } from "react";
 
-interface TooltipButtonProps extends Omit<ButtonProps, 'size' | 'variant'> {
-  activeTool?: boolean
-  icon?: ReactNode
-  text?: ReactNode
-  kdbContent?: string
-  kdbText?: string
-  IconOnly?: boolean
-  size?: "sm" | "md" | "lg"
-  variant?: "outline" | "danger" | "tertiary" | "danger-soft" | "ghost" | "primary" | "secondary" | undefined
-  tooltipText?: string
-  tooltipSide?: "top" | "right" | "bottom" | "left"
-  tooltipClassName?: string
-  buttonClassName?: string
-  disabled?: boolean
+interface TooltipButtonProps extends Omit<ButtonProps, "size" | "variant"> {
+  activeTool?: boolean;
+  icon?: ReactNode;
+  text?: ReactNode;
+  kdbContent?: string;
+  kdbText?: string;
+  IconOnly?: boolean;
+  size?: "sm" | "md" | "lg";
+  variant?:
+    | "outline"
+    | "danger"
+    | "tertiary"
+    | "danger-soft"
+    | "ghost"
+    | "primary"
+    | "secondary"
+    | undefined;
+  tooltipText?: string;
+  tooltipSide?: "top" | "right" | "bottom" | "left";
+  tooltipClassName?: string;
+  buttonClassName?: string;
+  disabled?: boolean;
 }
 
-export function TooltipButton({ 
+export function TooltipButton({
   activeTool = true,
-  icon, 
+  icon,
   text,
   kdbContent,
   kdbText,
-  IconOnly = false, 
+  IconOnly = false,
   size = "md",
   variant = "tertiary",
-  tooltipText, 
+  tooltipText,
   tooltipSide = "top",
-  tooltipClassName, 
+  tooltipClassName,
   buttonClassName,
   onPress,
   disabled,
-  ...props 
+  ...props
 }: TooltipButtonProps) {
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
@@ -48,11 +56,11 @@ export function TooltipButton({
   return (
     <Tooltip closeDelay={0} isOpen={isTooltipOpen}>
       <Tooltip.Trigger>
-        <Button 
+        <Button
           isIconOnly={IconOnly}
           size={size}
           variant={variant}
-          className={cn(buttonClassName, "rounded-md")}
+          className={cn(buttonClassName, "rounded-md min-w-0")}
           onPress={handleClick}
           isDisabled={disabled}
           onMouseEnter={() => setIsTooltipOpen(true)}
@@ -65,21 +73,22 @@ export function TooltipButton({
         </Button>
       </Tooltip.Trigger>
       {activeTool && (
-        <Tooltip.Content 
-          placement={tooltipSide} 
-          className={cn("bg-neutral-900 border border-neutral-800 flex items-center gap-2 px-3", tooltipClassName)}
-        >
-          {tooltipText && (
-            <p>{tooltipText}</p>
+        <Tooltip.Content
+          placement={tooltipSide}
+          className={cn(
+            "bg-neutral-900 border border-neutral-800 flex items-center gap-2 px-3",
+            tooltipClassName,
           )}
+        >
+          {tooltipText && <p>{tooltipText}</p>}
           {kdbText && (
             <div>
-              {kdbContent ? kdbContent : ''}
+              {kdbContent ? kdbContent : ""}
               <kbd className="bg-[#3d3d3d] text-gray-300">{kdbText}</kbd>
             </div>
           )}
         </Tooltip.Content>
       )}
     </Tooltip>
-  )
+  );
 }

@@ -311,7 +311,7 @@ export const ModalImageUploader = ({
                         )}
                       </div>
                       {isScrollable && !isScrollEnd && (
-                        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-zinc-950 to-transparent" />
+                        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-[#171717] to-transparent" />
                       )}
                     </div>
                   </div>
