@@ -1,4 +1,4 @@
-// import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 // import { getServerSession } from "next-auth/next";
 // import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 // import { renderToBuffer } from "@react-pdf/renderer";
@@ -66,3 +66,12 @@
 //     },
 //   });
 // }
+
+export async function POST() {
+  return new NextResponse("PDF export desabilitado temporariamente", {
+    status: 503,
+    headers: {
+      "Content-Type": "text/plain",
+    },
+  });
+}
