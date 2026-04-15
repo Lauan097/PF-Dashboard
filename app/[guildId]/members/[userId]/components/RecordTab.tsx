@@ -144,7 +144,7 @@ export default function RecordTab({ userId, guildId }: RecordTabProps) {
           <Button
             variant={"secondary"}
             onClick={handleDownloadPDF}
-            disabled={downloading}
+            disabled={/*downloading*/ true}
           >
             {downloading ? (
               <Loader size={14} className="animate-spin" />
@@ -193,6 +193,7 @@ export default function RecordTab({ userId, guildId }: RecordTabProps) {
               alt="Foto Oficial"
               fill
               className="object-cover"
+              priority
             />
           </div>
           <div className="flex-1 space-y-4 flex flex-col justify-end">

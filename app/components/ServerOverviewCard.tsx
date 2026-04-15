@@ -47,6 +47,7 @@ export function ServerOverviewCard({ data }: { data: ServerOverview }) {
             className="h-24 w-24 rounded-full border-4 border-[#0f0f14] bg-[#0f0f14]"
             width={800}
             height={800}
+            priority
           />
 
           <div className="pb-2">

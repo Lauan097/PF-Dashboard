@@ -373,6 +373,7 @@ export default function EditRecordPage() {
                 alt="Foto Oficial"
                 fill
                 className="object-cover"
+                priority
               />
             </div>
             <Input

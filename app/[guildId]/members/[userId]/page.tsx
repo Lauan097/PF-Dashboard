@@ -142,6 +142,7 @@ export default function UserProfilePage() {
                       "https://cdn.discordapp.com/embed/avatars/0.png";
                   }}
                   unoptimized
+                  priority
                 />
                 <div
                   className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-[#0e0e0e] ${getStatusColor(member?.status || "")}`}

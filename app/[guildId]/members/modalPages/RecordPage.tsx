@@ -102,6 +102,7 @@ export default function MemberRecordPage({ userId, guildId }: MemberRecordPagePr
               alt="Foto Oficial" 
               fill
               className="object-cover"
+              priority
             />
           </div>
           

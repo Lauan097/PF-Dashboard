@@ -209,6 +209,7 @@ export default function SidebarDashboard() {
                   width={512}
                   height={512}
                   className="w-8 h-8 rounded-full bg-blue-500/60"
+                  priority
                 />
               </div>
 
@@ -245,6 +246,7 @@ export default function SidebarDashboard() {
                   width={512}
                   height={512}
                   className="h-8 w-8 rounded-full bg-blue-500/60 shrink-0"
+                  priority
                 />
                 <div className="flex flex-col items-start min-w-0">
                   <span className="truncate text-sm w-full">

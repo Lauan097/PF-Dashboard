@@ -29,6 +29,7 @@ export const ImageBlock = ({ block, onUpdate, onRemove, parentId }: BlockProps) 
               fill 
               className="object-cover transition-opacity group-hover/image:opacity-80"
               unoptimized
+              priority
             />
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/image:opacity-100 transition-opacity bg-black/30">
               <span className="text-white text-sm font-medium bg-black/50 px-3 py-1.5 rounded-md backdrop-blur-sm">

@@ -166,6 +166,7 @@ export default function MemberTable({
                                   "https://cdn.discordapp.com/embed/avatars/0.png";
                               }}
                               unoptimized
+                              priority
                             />
                             <div
                               className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-[#3d3d3d] ${getStatusColor(member.status)}`}

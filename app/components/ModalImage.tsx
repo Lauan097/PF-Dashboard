@@ -144,6 +144,7 @@ export const ModalImageUploader = ({
             width={0}
             height={0}
             className="max-w-full rounded-md border border-white/10"
+            priority
           />
         </div>
       )}
@@ -297,6 +298,7 @@ export const ModalImageUploader = ({
                                   onChange(imageUrl);
                                   onClose();
                                 }}
+                                priority
                               />
                             ) : (
                               <div

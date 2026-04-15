@@ -46,6 +46,7 @@ export function ServerSelect({
               width={512}
               height={512}
               className="h-9 w-9 rounded-full bg-blue-500/60"
+              priority
             />
           </div>
           
@@ -89,6 +90,7 @@ export function ServerSelect({
                 width={512}
                 height={512}
                 className="h-6 w-6 rounded-full bg-blue-500/60"
+                priority
               />
               <div className="flex flex-col items-start min-w-0">
                 <span className="text-sm truncate w-full">{server.name}</span>
