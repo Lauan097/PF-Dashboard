@@ -67,7 +67,7 @@ export default function LoginPage() {
                 </div>
 
                 <button 
-                  onClick={() => signIn("discord")}
+                  onClick={() => signIn("discord", { callbackUrl: "/" })}
                   className="w-full rounded-md bg-indigo-600 px-4 py-2 font-semibold text-white hover:bg-indigo-700 cursor-pointer transition-colors"
                 >
                   <FaDiscord className="inline-block mr-2" size={22} />

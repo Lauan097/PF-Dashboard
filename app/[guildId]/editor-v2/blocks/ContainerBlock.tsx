@@ -42,7 +42,7 @@ export const ContainerBlock = ({ block, onUpdate, onRemove, onAddChild, parentId
   return (
     <BlockWrapper 
       className={`p-3 my-2 bg-[#2B2D31] hover:bg-[#2B2D31] rounded-lg border-l-4 ${isEmpty ? 'border-2 border-l-red-500!' : ''}`} 
-      style={{ borderLeftColor: isEmpty ? undefined : containerBlock.accentColor }} 
+      style={{ borderLeftColor: isEmpty ? undefined : containerBlock.accentColor || "#00000000" }} 
       actions={actions}
     >
       <div className="flex justify-between items-center mb-2.5"></div>

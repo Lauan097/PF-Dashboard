@@ -88,8 +88,8 @@ function PreviewContainerBlock({
 }) {
   return (
     <div
-      className="rounded-md overflow-hidden border-l-4 bg-[#2b2d31] w-full"
-      style={{ borderLeftColor: block.accentColor || "#5865F2" }}
+      className="rounded-md overflow-hidden border-l-4 bg-[#2b2d31] w-full max-w-142.5"
+      style={{ borderLeftColor: block.accentColor || "#00000000" }}
     >
       <div className="p-3 space-y-2">
         {block.children.map((child) => (

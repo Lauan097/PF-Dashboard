@@ -80,7 +80,7 @@ export default function SidebarDashboard() {
     info: PanInfo,
   ) => {
     if (isMobile) {
-      if (info.offset.x < -50) setIsMobileOpen(false);
+      if (info.offset.x < -30) setIsMobileOpen(false);
     }
   };
 
@@ -94,9 +94,9 @@ export default function SidebarDashboard() {
     <>
       {isMobile && !isMobileOpen && (
         <motion.div
-          className="fixed top-0 left-0 bottom-0 w-8 z-50 bg-transparent"
+          className="fixed top-0 left-0 bottom-0 w-12 z-100 bg-transparent touch-none"
           onPanEnd={(e, info) => {
-            if (info.offset.x > 50) setIsMobileOpen(true);
+            if (info.offset.x > 30) setIsMobileOpen(true);
           }}
         />
       )}
@@ -154,7 +154,7 @@ export default function SidebarDashboard() {
             {navItems.map((item) => (
               <TooltipButton
                 key={item.path}
-                activeTool={isCollapsed ? true : false}
+                activeTool={isCollapsed && !isMobile ? true : false}
                 icon={<item.icon className="h-5 w-5 min-w-5 shrink-0" />}
                 text={
                   <AnimatePresence mode="wait">
