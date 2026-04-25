@@ -67,6 +67,17 @@ function formatDate(iso: string): string {
   });
 }
 
+// Remove prefixo de tag e ID numérico do nome para exibição no eixo do gráfico
+// Ex: "[PP1] · Harry「12834」" → "Harry"
+function shortLabel(name: string): string {
+  return (
+    name
+      .replace(/^\[.*?\]\s*·\s*/, "")
+      .replace(/「.*?」/, "")
+      .trim() || name
+  );
+}
+
 const CHART_COLORS = [
   "#6366f1",
   "#8b5cf6",
@@ -181,7 +192,7 @@ function MemberRow({
       <td className="py-3 px-4">
         <div>
           <p className="text-sm text-zinc-200 font-medium truncate max-w-40">
-            {member.nicknameDc ?? member.gameName ?? "Desconhecido"}
+            {member.displayName}
           </p>
           {member.rank && (
             <p className="text-xs text-zinc-500 truncate max-w-40">
@@ -630,7 +641,7 @@ export default function PointManagerPage() {
                   key={m.id}
                   className="rounded-lg bg-white/5 border border-white/8 px-3 py-1 text-xs text-zinc-400"
                 >
-                  {m.nicknameDc ?? m.gameName ?? "Desconhecido"}
+                  {m.displayName}
                   {m.rank && (
                     <span className="text-zinc-600 ml-1">· {m.rank}</span>
                   )}
@@ -659,7 +670,9 @@ export default function PointManagerPage() {
             ) : (
               <Bar
                 data={{
-                  labels: data!.stats.topByWeeklyTime.map((x) => x.name),
+                  labels: data!.stats.topByWeeklyTime.map((x) =>
+                    shortLabel(x.name),
+                  ),
                   datasets: [
                     {
                       data: data!.stats.topByWeeklyTime.map(
@@ -709,7 +722,9 @@ export default function PointManagerPage() {
             ) : (
               <Bar
                 data={{
-                  labels: data!.stats.topBySessions.map((x) => x.name),
+                  labels: data!.stats.topBySessions.map((x) =>
+                    shortLabel(x.name),
+                  ),
                   datasets: [
                     {
                       data: data!.stats.topBySessions.map((x) => x.count),
@@ -747,7 +762,7 @@ export default function PointManagerPage() {
             ) : (
               <Bar
                 data={{
-                  labels: data!.stats.topByVoice.map((x) => x.name),
+                  labels: data!.stats.topByVoice.map((x) => shortLabel(x.name)),
                   datasets: [
                     {
                       data: data!.stats.topByVoice.map(
@@ -797,7 +812,9 @@ export default function PointManagerPage() {
             ) : (
               <Bar
                 data={{
-                  labels: data!.stats.topByMessages.map((x) => x.name),
+                  labels: data!.stats.topByMessages.map((x) =>
+                    shortLabel(x.name),
+                  ),
                   datasets: [
                     {
                       data: data!.stats.topByMessages.map((x) => x.count),

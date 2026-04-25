@@ -112,6 +112,7 @@ export type InitialPageResponse =
 export interface PointManagerMember {
   id: string;
   userId: string;
+  displayName: string;
   nicknameDc: string | null;
   gameName: string | null;
   rank: string | null;
