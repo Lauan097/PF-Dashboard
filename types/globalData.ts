@@ -106,3 +106,43 @@ export interface InitialPageData {
 export type InitialPageResponse =
   | { success: true; data: InitialPageData }
   | { success: false; error: string };
+
+// -------- GERENCIADOR DE PONTO --------
+
+export interface PointManagerMember {
+  id: string;
+  userId: string;
+  nicknameDc: string | null;
+  gameName: string | null;
+  rank: string | null;
+  weeklyGoal: number;
+  weeklyGoalDiscount: number;
+  effectiveGoal: number;
+  weeklySeconds: number;
+  sessionCount: number;
+  metGoal: boolean;
+  status: string;
+}
+
+export interface PointManagerStats {
+  topByWeeklyTime: { name: string; seconds: number }[];
+  topBySessions: { name: string; count: number }[];
+  topByVoice: { name: string; seconds: number }[];
+  topByMessages: { name: string; count: number }[];
+}
+
+export interface PointManagerData {
+  currentWeeklyGoal: number;
+  weekStart: string;
+  weekEnd: string;
+  members: PointManagerMember[];
+  stats: PointManagerStats;
+}
+
+export type PointManagerResponse =
+  | { success: true; data: PointManagerData }
+  | { success: false; error: string };
+
+export type SetGoalResponse =
+  | { success: true }
+  | { success: false; error: string };

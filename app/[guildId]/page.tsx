@@ -20,6 +20,7 @@ import {
 import ErrorPage from "../components/ErrorPage";
 import { Skeleton } from "@/components/skeleton";
 import { InitialPageData, UserStatEntry } from "@/types/globalData";
+import { variants } from "@/types/animate";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend);
 
@@ -53,8 +54,6 @@ function StatCard({ icon: Icon, label, value, color, loading }: {
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
       className="flex items-center gap-4 rounded-2xl bg-white/5 border border-white/8 px-5 py-4 backdrop-blur-sm"
     >
       <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${color}`}>
@@ -142,7 +141,7 @@ export default function HomeDashboard() {
       } catch {
         setError("Falha na comunicação com a API");
       } finally {
-        setLoading(false);
+        setTimeout(() => setLoading(false), 800); // Pequeno delay para melhor UX
       }
     };
     fetchData();
@@ -161,8 +160,11 @@ export default function HomeDashboard() {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      variants={variants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={variants.transition}
       className="min-h-screen px-6 py-8 max-w-7xl mx-auto space-y-10"
     >
       <div className="flex flex-col items-center border-b border-white/10 pb-8">

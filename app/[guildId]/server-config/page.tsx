@@ -16,6 +16,7 @@ import type {
   ServerConfigGetResponse,
   ServerConfigPayload,
 } from "@/types/serverConfig";
+import { variants, variantSections } from "@/types/animate";
 
 const empty = (): ServerConfigPayload => ({
   channels: {
@@ -75,9 +76,11 @@ interface SectionProps {
 function Section({ icon, title, description, children }: SectionProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      key={title}
+      variants={variantSections}
+      initial="initial"
+      animate="animate"
+      transition={variantSections.transition}
       className="rounded-xl border border-white/5 bg-white/3 p-6"
     >
       <div className="flex items-start gap-3 mb-6">
@@ -128,7 +131,7 @@ export default function ServerConfigPage() {
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erro ao carregar configurações");
     } finally {
-      setLoading(false);
+      setTimeout(() => setLoading(false), 800); // Pequeno delay para melhor UX
     }
   }, [guildId]);
 
@@ -163,19 +166,20 @@ export default function ServerConfigPage() {
   const setRole = (key: keyof ServerConfigPayload["roles"]) => (value: string) =>
     setForm(prev => ({ ...prev, roles: { ...prev.roles, [key]: value || null } }));
 
-  // ---- render ----
   if (error) return <ErrorPage error={error} />;
 
   const channels = serverData?.channels ?? [];
   const roles = serverData?.roles ?? [];
 
-  const containerVariants = {
-    hidden: {},
-    show: { transition: { staggerChildren: 0.08 } },
-  };
-
   return (
-    <div className="container mx-auto py-12 max-w-5xl px-4">
+    <motion.div 
+      variants={variants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={variants.transition}
+      className="container mx-auto py-12 max-w-5xl px-4"
+    >
       <div className="min-h-screen pb-28">
 
         {/* Header */}
@@ -195,12 +199,7 @@ export default function ServerConfigPage() {
           </button>
         </div>
 
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-          className="space-y-6"
-        >
+        <div className="space-y-6">
           {/* Canais de Membros */}
           <Section
             icon={<Users size={18} />}
@@ -364,7 +363,7 @@ export default function ServerConfigPage() {
               </>
             )}
           </Section>
-        </motion.div>
+        </div>
       </div>
 
       <SaveBar
@@ -373,6 +372,6 @@ export default function ServerConfigPage() {
         onSave={handleSave}
         onReset={handleReset}
       />
-    </div>
+    </motion.div>
   );
 }

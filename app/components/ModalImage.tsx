@@ -291,8 +291,8 @@ export const ModalImageUploader = ({
                                 key={index}
                                 src={imageUrl}
                                 alt="Imagem recente"
-                                width={128}
-                                height={128}
+                                width={800}
+                                height={800}
                                 className="w-full h-12 sm:h-14 object-cover rounded-md cursor-pointer border border-transparent hover:border-blue-500 transition brightness-95 hover:brightness-110"
                                 onClick={() => {
                                   onChange(imageUrl);

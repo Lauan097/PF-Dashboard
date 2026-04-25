@@ -26,6 +26,7 @@ import {
 import MemberTable from "./components/MemberTable";
 import ErrorPage from "@/app/components/ErrorPage";
 import { Skeleton } from "@/components/skeleton";
+import { variants } from "@/types/animate";
 
 interface DiscordMember {
   id: string;
@@ -139,7 +140,15 @@ export default function MembersPage() {
   }
 
   return (
-    <motion.div className="bg-[#242424] rounded-xl">
+    <motion.div
+      key="members-page"
+      variants={variants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={variants.transition}
+      className="bg-[#242424] rounded-xl"
+    >
       <div className="min-h-[80vh] p-2 flex flex-col shadow-xl">
         <div className="bg-[#3d3d3d] p-2 rounded-md flex items-center border border-white/5 mb-4">
           {loading ? (
@@ -181,26 +190,26 @@ export default function MembersPage() {
                 />
               </div>
               <Dropdown.Popover
-                className="shadow-2xl min-w-38 border border-white/10"
+                className="shadow-2xl min-w-38 border border-white/10 rounded-lg"
                 placement="left top"
               >
                 <Dropdown.Menu>
                   <Dropdown.SubmenuTrigger>
-                    <Dropdown.Item>
+                    <Dropdown.Item className="rounded-lg">
                       Filtrar Data
                       <Dropdown.SubmenuIndicator />
                     </Dropdown.Item>
-                    <Dropdown.Popover className="min-w-38">
+                    <Dropdown.Popover className="min-w-38 rounded-lg">
                       <Dropdown.Menu>
                         <Dropdown.Item
                           onClick={() => setDateSort("desc")}
-                          className={dateSort === "desc" ? "bg-white/10" : ""}
+                          className={dateSort === "desc" ? "bg-white/10 rounded-lg" : "rounded-lg"}
                         >
                           Mais Recentes
                         </Dropdown.Item>
                         <Dropdown.Item
                           onClick={() => setDateSort("asc")}
-                          className={dateSort === "asc" ? "bg-white/10" : ""}
+                          className={dateSort === "asc" ? "bg-white/10 rounded-lg" : "rounded-lg"}
                         >
                           Mais Antigos
                         </Dropdown.Item>
@@ -209,16 +218,16 @@ export default function MembersPage() {
                   </Dropdown.SubmenuTrigger>
 
                   <Dropdown.SubmenuTrigger>
-                    <Dropdown.Item>
+                    <Dropdown.Item className="rounded-lg">
                       Filtrar Status
                       <Dropdown.SubmenuIndicator />
                     </Dropdown.Item>
-                    <Dropdown.Popover className="min-w-38">
+                    <Dropdown.Popover className="min-w-38 rounded-lg">
                       <Dropdown.Menu>
                         <Dropdown.Item
                           onClick={() => setStatusFilter("online")}
                           className={
-                            statusFilter === "online" ? "bg-white/10" : ""
+                            statusFilter === "online" ? "bg-white/10 rounded-lg" : "rounded-lg"
                           }
                         >
                           Disponível
@@ -230,7 +239,7 @@ export default function MembersPage() {
                         <Dropdown.Item
                           onClick={() => setStatusFilter("idle")}
                           className={
-                            statusFilter === "idle" ? "bg-white/10" : ""
+                            statusFilter === "idle" ? "bg-white/10 rounded-lg" : "rounded-lg"
                           }
                         >
                           Ausente
@@ -239,7 +248,7 @@ export default function MembersPage() {
                         <Dropdown.Item
                           onClick={() => setStatusFilter("dnd")}
                           className={
-                            statusFilter === "dnd" ? "bg-white/10" : ""
+                            statusFilter === "dnd" ? "bg-white/10 rounded-lg" : "rounded-lg"
                           }
                         >
                           Não Perturbe
@@ -251,7 +260,7 @@ export default function MembersPage() {
                         <Dropdown.Item
                           onClick={() => setStatusFilter("offline")}
                           className={
-                            statusFilter === "offline" ? "bg-white/10" : ""
+                            statusFilter === "offline" ? "bg-white/10 rounded-lg" : "rounded-lg"
                           }
                         >
                           Offline
@@ -266,7 +275,7 @@ export default function MembersPage() {
 
                   <Separator className="bg-white/10" />
 
-                  <Dropdown.Item onClick={resetFilters}>
+                  <Dropdown.Item onClick={resetFilters} className="rounded-lg hover:bg-red-400/15 text-red-400">
                     Limpar Filtros
                     <Trash2 className="text-red-400 ml-auto" size={16} />
                   </Dropdown.Item>

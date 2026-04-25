@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { LayoutRouterContext } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { usePathname } from "next/navigation";
 import { useContext, useMemo } from "react";
-import { VariantsPageTransition } from "@/utils/variants";
 
 function FrozenRouter({ children }: { children: React.ReactNode }) {
   const context = useContext(LayoutRouterContext);
@@ -23,14 +22,7 @@ export default function AnimationWrapper({ children }: { children: React.ReactNo
 
   return (
     <AnimatePresence mode="wait">
-      <motion.div
-        key={pathname}
-        variants={VariantsPageTransition}
-        initial="hidden"
-        animate="show"
-        exit="exit"
-        className="min-h-full w-full"
-      >
+      <motion.div key={pathname} className="min-h-full w-full">
         <FrozenRouter>{children}</FrozenRouter>
       </motion.div>
     </AnimatePresence>

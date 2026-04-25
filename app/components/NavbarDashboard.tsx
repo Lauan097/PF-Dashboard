@@ -58,7 +58,7 @@ export default function SidebarDashboard() {
       label: "Bate Ponto",
       icon: Clock,
       path: `/${guildId}/point-manager`,
-      disabled: true,
+      disabled: false,
     },
   ];
 
