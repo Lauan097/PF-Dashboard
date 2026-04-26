@@ -106,9 +106,14 @@ export default function UserProfilePage() {
   }, [guildId, userId]);
 
   return (
-    <div className="space-y-4">
+    <motion.div
+      initial={{ opacity: 0, x: 50 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 50 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      className="space-y-4"
+    >
       <div className="bg-[#0e0e0e] border border-white/8 rounded-2xl overflow-hidden print:hidden">
-        {/* Header */}
         <div className="flex items-center gap-4 px-6 py-4 border-b border-white/5">
           <button
             onClick={() => router.push(`/${guildId}/members`)}
@@ -166,7 +171,7 @@ export default function UserProfilePage() {
                 </div>
               </div>
 
-              <div className="hidden md:flex items-center gap-4 mr-2">
+              <div className="hidden md:flex items-center gap-4 border p-2 rounded-lg border-white/10">
                 <div className="flex items-center gap-1.5 text-xs text-zinc-400">
                   <Clock size={12} className="text-blue-400" />
                   <span className="text-zinc-200 font-medium">
@@ -201,12 +206,10 @@ export default function UserProfilePage() {
           )}
         </div>
 
-        {/* Tabs */}
         <div className="px-6 py-2.5 flex items-center justify-between">
           <Tabs
             value={activeTab}
             onValueChange={(v) => setActiveTab(v as TabId)}
-            className=""
           >
             <TabsList>
               {TABS.map((tab) => {
@@ -271,6 +274,6 @@ export default function UserProfilePage() {
           </motion.div>
         </AnimatePresence>
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -122,7 +122,7 @@ export default function OverviewTab({ userId, guildId }: OverviewTabProps) {
               setOverview(data.data);
               setLoading(false);
             }
-          }, 500);
+          }, 800);
         } else {
           setError(data.error || "Erro ao carregar visão geral.");
           setLoading(false);
@@ -145,9 +145,25 @@ export default function OverviewTab({ userId, guildId }: OverviewTabProps) {
 
   if (error || !overview) {
     return (
-      <div className="text-red-400 text-sm py-12 text-center flex items-center justify-center">
-        <CircleAlert size={24} className="inline-block mr-2" />
-        {error || "Ficha não encontrada."}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "70vh",  
+        }}
+      > 
+        <div className="text-center">
+          <div className="mx-auto w-12 h-12 bg-zinc-900/80 rounded-2xl flex items-center justify-center mb-3 border border-white/5">
+            <CircleAlert className="text-yellow-400 w-5 h-5" />
+          </div>
+          <p className="text-sm font-medium text-white">
+            Nenhum dado disponível
+          </p>
+          <p className="text-xs text-zinc-500 max-w-[280px] mt-1">
+            {error || "Este usuário não possui registros ou permissão para visualização."}
+          </p>
+        </div>  
       </div>
     );
   }

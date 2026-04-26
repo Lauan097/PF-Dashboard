@@ -26,7 +26,7 @@ import {
 import MemberTable from "./components/MemberTable";
 import ErrorPage from "@/app/components/ErrorPage";
 import { Skeleton } from "@/components/skeleton";
-import { variants } from "@/types/animate";
+import { PointManagerMember, PointManagerResponse } from "@/types/globalData";
 
 interface DiscordMember {
   id: string;
@@ -47,12 +47,38 @@ interface MembersResponse {
 
 export default function MembersPage() {
   const [members, setMembers] = useState<DiscordMember[]>([]);
+  const [pointManagerMembers, setPointManagerMembers] = useState<
+    PointManagerMember[]
+  >([]);
   const [Animloading, setAnimLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isNavigatingToMember, setIsNavigatingToMember] = useState(false);
+
+  const pageVariants = {
+    initial: { opacity: 0, y: 30, x: 0 },
+    animate: {
+      opacity: 1,
+      y: 0,
+      x: 0,
+      transition: { duration: 0.2, ease: "easeOut" as const },
+    },
+    exit: isNavigatingToMember
+      ? {
+          opacity: 0,
+          x: -50,
+          transition: { duration: 0.2, ease: "easeOut" as const },
+        }
+      : {
+          opacity: 0,
+          y: -30,
+          transition: { duration: 0.2, ease: "easeOut" as const },
+        },
+  };
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [goalFilter, setGoalFilter] = useState<"met" | "notMet" | null>(null);
   const [dateSort, setDateSort] = useState<"asc" | "desc">("desc");
 
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -67,12 +93,18 @@ export default function MembersPage() {
 
       setAnimLoading(true);
       try {
-        const response = await fetch(
-          `/api/data/guild?guildId=${guildId}&type=members`,
-        );
-        const result: MembersResponse = await response.json();
+        const [membersRes, pointManagerRes] = await Promise.all([
+          fetch(`/api/data/guild?guildId=${guildId}&type=members`),
+          fetch(`/api/data/point--manager?guildId=${guildId}`),
+        ]);
 
-        if (result.success) setMembers(result.data.members);
+        const membersResult: MembersResponse = await membersRes.json();
+        const pointManagerResult: PointManagerResponse =
+          await pointManagerRes.json();
+
+        if (membersResult.success) setMembers(membersResult.data.members);
+        if (pointManagerResult.success)
+          setPointManagerMembers(pointManagerResult.data.members);
       } catch (e) {
         console.log("Erro ao carregar membros", e);
         setError("Ocorreu um erro ao carregar os membros do servidor.");
@@ -118,6 +150,14 @@ export default function MembersPage() {
       result = result.filter((m) => m.status === statusFilter);
     }
 
+    if (goalFilter !== null) {
+      result = result.filter((m) => {
+        const pmMember = pointManagerMembers.find((pm) => pm.userId === m.id);
+        if (!pmMember) return false;
+        return goalFilter === "met" ? pmMember.metGoal : !pmMember.metGoal;
+      });
+    }
+
     result.sort((a, b) => {
       const dateA = new Date(a.joinedAt).getTime();
       const dateB = new Date(b.joinedAt).getTime();
@@ -127,11 +167,19 @@ export default function MembersPage() {
     });
 
     return result;
-  }, [members, search, statusFilter, dateSort]);
+  }, [
+    members,
+    search,
+    statusFilter,
+    goalFilter,
+    dateSort,
+    pointManagerMembers,
+  ]);
 
   const resetFilters = () => {
     setSearch("");
     setStatusFilter(null);
+    setGoalFilter(null);
     setDateSort("desc");
   };
 
@@ -142,11 +190,10 @@ export default function MembersPage() {
   return (
     <motion.div
       key="members-page"
-      variants={variants}
+      variants={pageVariants}
       initial="initial"
       animate="animate"
       exit="exit"
-      transition={variants.transition}
       className="bg-[#242424] rounded-xl"
     >
       <div className="min-h-[80vh] p-2 flex flex-col shadow-xl">
@@ -186,7 +233,7 @@ export default function MembersPage() {
                   isIconOnly
                   icon={<Filter />}
                   tooltipText="Filtrar"
-                  buttonClassName={`bg-[#18181B] border cursor-pointer transition-colors ${statusFilter ? "border-blue-500/50 text-blue-400" : "border-[#3d3d3d] hover:bg-neutral-800/60 text-white/50 hover:text-white"}`}
+                  buttonClassName={`bg-[#18181B] border cursor-pointer transition-colors ${statusFilter || goalFilter ? "border-blue-500/50 text-blue-400" : "border-[#3d3d3d] hover:bg-neutral-800/60 text-white/50 hover:text-white"}`}
                 />
               </div>
               <Dropdown.Popover
@@ -203,13 +250,21 @@ export default function MembersPage() {
                       <Dropdown.Menu>
                         <Dropdown.Item
                           onClick={() => setDateSort("desc")}
-                          className={dateSort === "desc" ? "bg-white/10 rounded-lg" : "rounded-lg"}
+                          className={
+                            dateSort === "desc"
+                              ? "bg-white/10 rounded-lg"
+                              : "rounded-lg"
+                          }
                         >
                           Mais Recentes
                         </Dropdown.Item>
                         <Dropdown.Item
                           onClick={() => setDateSort("asc")}
-                          className={dateSort === "asc" ? "bg-white/10 rounded-lg" : "rounded-lg"}
+                          className={
+                            dateSort === "asc"
+                              ? "bg-white/10 rounded-lg"
+                              : "rounded-lg"
+                          }
                         >
                           Mais Antigos
                         </Dropdown.Item>
@@ -227,7 +282,9 @@ export default function MembersPage() {
                         <Dropdown.Item
                           onClick={() => setStatusFilter("online")}
                           className={
-                            statusFilter === "online" ? "bg-white/10 rounded-lg" : "rounded-lg"
+                            statusFilter === "online"
+                              ? "bg-white/10 rounded-lg"
+                              : "rounded-lg"
                           }
                         >
                           Disponível
@@ -239,7 +296,9 @@ export default function MembersPage() {
                         <Dropdown.Item
                           onClick={() => setStatusFilter("idle")}
                           className={
-                            statusFilter === "idle" ? "bg-white/10 rounded-lg" : "rounded-lg"
+                            statusFilter === "idle"
+                              ? "bg-white/10 rounded-lg"
+                              : "rounded-lg"
                           }
                         >
                           Ausente
@@ -248,7 +307,9 @@ export default function MembersPage() {
                         <Dropdown.Item
                           onClick={() => setStatusFilter("dnd")}
                           className={
-                            statusFilter === "dnd" ? "bg-white/10 rounded-lg" : "rounded-lg"
+                            statusFilter === "dnd"
+                              ? "bg-white/10 rounded-lg"
+                              : "rounded-lg"
                           }
                         >
                           Não Perturbe
@@ -260,7 +321,9 @@ export default function MembersPage() {
                         <Dropdown.Item
                           onClick={() => setStatusFilter("offline")}
                           className={
-                            statusFilter === "offline" ? "bg-white/10 rounded-lg" : "rounded-lg"
+                            statusFilter === "offline"
+                              ? "bg-white/10 rounded-lg"
+                              : "rounded-lg"
                           }
                         >
                           Offline
@@ -273,9 +336,43 @@ export default function MembersPage() {
                     </Dropdown.Popover>
                   </Dropdown.SubmenuTrigger>
 
+                  <Dropdown.SubmenuTrigger>
+                    <Dropdown.Item className="rounded-lg">
+                      Filtrar por Meta
+                      <Dropdown.SubmenuIndicator />
+                    </Dropdown.Item>
+                    <Dropdown.Popover className="min-w-38 rounded-lg">
+                      <Dropdown.Menu>
+                        <Dropdown.Item
+                          onClick={() => setGoalFilter("met")}
+                          className={
+                            goalFilter === "met"
+                              ? "bg-white/10 rounded-lg"
+                              : "rounded-lg"
+                          }
+                        >
+                          Meta Concluída
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                          onClick={() => setGoalFilter("notMet")}
+                          className={
+                            goalFilter === "notMet"
+                              ? "bg-white/10 rounded-lg"
+                              : "rounded-lg"
+                          }
+                        >
+                          Meta Não Concluída
+                        </Dropdown.Item>
+                      </Dropdown.Menu>
+                    </Dropdown.Popover>
+                  </Dropdown.SubmenuTrigger>
+
                   <Separator className="bg-white/10" />
 
-                  <Dropdown.Item onClick={resetFilters} className="rounded-lg hover:bg-red-400/15 text-red-400">
+                  <Dropdown.Item
+                    onClick={resetFilters}
+                    className="rounded-lg hover:bg-red-400/15 text-red-400"
+                  >
                     Limpar Filtros
                     <Trash2 className="text-red-400 ml-auto" size={16} />
                   </Dropdown.Item>
@@ -297,7 +394,11 @@ export default function MembersPage() {
           </div>
         </div>
 
-        <MemberTable members={filteredMembers} loading={loading} />
+        <MemberTable
+          members={filteredMembers}
+          loading={loading}
+          onRowClick={() => setIsNavigatingToMember(true)}
+        />
       </div>
     </motion.div>
   );

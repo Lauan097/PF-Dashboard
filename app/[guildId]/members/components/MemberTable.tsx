@@ -18,6 +18,7 @@ interface DiscordMember {
 interface MemberTableProps {
   members: DiscordMember[];
   loading?: boolean;
+  onRowClick?: () => void;
 }
 
 const variants = {
@@ -29,6 +30,7 @@ const variants = {
 export default function MemberTable({
   members,
   loading = true,
+  onRowClick,
 }: MemberTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;
@@ -147,9 +149,10 @@ export default function MemberTable({
                 : currentMembers.map((member) => (
                     <tr
                       key={member.id}
-                      onClick={() =>
-                        router.push(`/${guildId}/members/${member.id}`)
-                      }
+                      onClick={() => {
+                        onRowClick?.();
+                        router.push(`/${guildId}/members/${member.id}`);
+                      }}
                       className="border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer group"
                     >
                       <td className="px-6 py-4">

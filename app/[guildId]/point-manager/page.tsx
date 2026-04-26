@@ -67,8 +67,6 @@ function formatDate(iso: string): string {
   });
 }
 
-// Remove prefixo de tag e ID numérico do nome para exibição no eixo do gráfico
-// Ex: "[PP1] · Harry「12834」" → "Harry"
 function shortLabel(name: string): string {
   return (
     name
@@ -120,8 +118,6 @@ const BAR_OPTIONS = {
     },
   },
 };
-
-// ── Sub-componentes ───────────────────────────────────────────────────────────
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
@@ -329,15 +325,12 @@ function ChartCard({
   );
 }
 
-// ── Página principal ──────────────────────────────────────────────────────────
-
 export default function PointManagerPage() {
   const [data, setData] = useState<PointManagerData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Estado do editor de meta
   const [editingGoal, setEditingGoal] = useState(false);
   const [goalHours, setGoalHours] = useState("");
   const [goalMinutes, setGoalMinutes] = useState("");
@@ -364,7 +357,7 @@ export default function PointManagerPage() {
         setTimeout(() => {
           setLoading(false);
           setRefreshing(false);
-        }, 800); // Pequeno delay para melhor UX
+        }, 800);
       }
     },
     [guildId],
@@ -374,7 +367,6 @@ export default function PointManagerPage() {
     fetchData();
   }, [fetchData]);
 
-  // Pré-preencher formulário ao abrir
   function openEditGoal() {
     const { hours, minutes } = secondsToHoursMinutes(
       data?.currentWeeklyGoal ?? 0,
@@ -414,7 +406,6 @@ export default function PointManagerPage() {
     }
   }
 
-  // Separar membros com meta definida
   const { metGoal, notMetGoal, noGoal } = useMemo(() => {
     if (!data) return { metGoal: [], notMetGoal: [], noGoal: [] };
     const withGoal = data.members.filter((m) => m.weeklyGoal > 0);
@@ -456,14 +447,12 @@ export default function PointManagerPage() {
       transition={variants.transition}
       className="min-h-screen px-6 py-8 max-w-7xl mx-auto space-y-10"
     >
-      {/* ── Cabeçalho ── */}
       <div className="flex flex-col items-center border-b border-white/10 pb-8 gap-3">
         <h1 className="text-4xl font-bold text-white">Bate Ponto</h1>
         <p className="text-sm text-zinc-500">
           Metas semanais, estatísticas e desempenho
         </p>
 
-        {/* Meta atual + botão de editar */}
         <div className="mt-2 flex items-center gap-3">
           <AnimatePresence mode="wait">
             {editingGoal ? (
@@ -553,7 +542,6 @@ export default function PointManagerPage() {
           </AnimatePresence>
         </div>
 
-        {/* Intervalo da semana */}
         {data && !loading && (
           <div className="flex items-center gap-1.5 text-xs text-zinc-600">
             <CalendarRange size={12} />
@@ -564,7 +552,6 @@ export default function PointManagerPage() {
         )}
       </div>
 
-      {/* ── Cards de resumo ── */}
       <section>
         <SectionTitle>Resumo da Semana</SectionTitle>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -599,7 +586,6 @@ export default function PointManagerPage() {
         </div>
       </section>
 
-      {/* ── Tabelas de meta ── */}
       <section>
         <SectionTitle>Status das Metas</SectionTitle>
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
@@ -623,7 +609,6 @@ export default function PointManagerPage() {
           />
         </div>
 
-        {/* Membros sem meta */}
         {!loading && noGoal.length > 0 && (
           <div className="mt-4 rounded-2xl bg-white/5 border border-white/8 p-5">
             <div className="flex items-center gap-2 mb-3">
@@ -652,11 +637,9 @@ export default function PointManagerPage() {
         )}
       </section>
 
-      {/* ── Gráficos ── */}
       <section>
         <SectionTitle>Estatísticas</SectionTitle>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {/* Top tempo na semana */}
           <ChartCard
             title="Top Tempo esta Semana"
             icon={Clock}
@@ -708,7 +691,6 @@ export default function PointManagerPage() {
             )}
           </ChartCard>
 
-          {/* Top sessões na semana */}
           <ChartCard
             title="Top Sessões esta Semana"
             icon={Trophy}
@@ -748,7 +730,6 @@ export default function PointManagerPage() {
             )}
           </ChartCard>
 
-          {/* Top tempo em voz (geral) */}
           <ChartCard
             title="Mais Tempo em Voz (Geral)"
             icon={Mic}
@@ -798,7 +779,6 @@ export default function PointManagerPage() {
             )}
           </ChartCard>
 
-          {/* Top mensagens (geral) */}
           <ChartCard
             title="Mais Mensagens (Geral)"
             icon={MessageSquare}
