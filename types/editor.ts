@@ -15,9 +15,14 @@ export interface TextBlockType extends BaseBlock {
   thumbnail?: string | null; 
 }
 
+export interface ImageGalleryItem {
+  id: string;
+  url: string;
+}
+
 export interface ImageBlockType extends BaseBlock { 
   type: 'image'; 
-  url?: string; 
+  images: ImageGalleryItem[];
 }
 
 export interface SeparatorBlockType extends BaseBlock { 

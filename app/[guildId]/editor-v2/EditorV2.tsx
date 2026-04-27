@@ -99,7 +99,7 @@ export default function DiscordV2Editor() {
     const id = Math.random().toString(36).substr(2, 9);
     let newBlock: EditorBlock;
     if (type === 'text')           newBlock = { id, type: 'text', content: [''], thumbnail: null } satisfies TextBlockType;
-    else if (type === 'image')     newBlock = { id, type: 'image', url: '' } satisfies ImageBlockType;
+    else if (type === 'image')     newBlock = { id, type: 'image', images: [] } satisfies ImageBlockType;
     else if (type === 'separator') newBlock = { id, type: 'separator', spacing: 'small', hasDivider: true } satisfies SeparatorBlockType;
     else                           newBlock = { id, type: 'container', children: [], accentColor: '#5865F2' } satisfies ContainerBlockType;
 
@@ -146,7 +146,11 @@ export default function DiscordV2Editor() {
         }
       } else if (block.type === 'image') {
         count++;
-        if (!block.url) errors.push(`Imagem sem URL (ID: ${block.id})`);
+        const imgs = block.images ?? [];
+        if (imgs.length === 0) errors.push(`Galeria de imagens vazia (ID: ${block.id})`);
+        imgs.forEach((img, idx) => {
+          if (!img.url) errors.push(`Imagem ${idx + 1} sem URL na galeria (ID: ${block.id})`);
+        });
       } else if (block.type === 'separator') {
         count++;
       } else if (block.type === 'container') {

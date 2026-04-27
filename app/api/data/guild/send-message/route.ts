@@ -57,7 +57,7 @@ const formatarBloco = (
     const image = bloco as ImageBlockType;
     return {
       type: "media_gallery",
-      images: image.url ? [{ url: image.url }] : [],
+      images: (image.images ?? []).map((img) => ({ url: img.url })),
     };
   }
 

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Trash2, Image as ImageIcon, X } from "lucide-react";
+import { Trash2, Image as ImageIcon, X, Pencil } from "lucide-react";
 import { BlockProps, TextBlockType } from "@/types/editor";
 import { BlockWrapper } from "../managers/BlockWrapper";
 import MentionInput from "../components/MentionPopUp";
@@ -71,10 +71,13 @@ export const TextBlock = ({
                 onClick={() =>
                   onUpdate(block.id, { thumbnail: null }, parentId)
                 }
-                className="absolute top-1 left-1 bg-black/60 p-1 rounded-full text-zinc-300 hover:text-red-400 opacity-0 group-hover/thumb:opacity-100 transition-opacity cursor-pointer"
+                className="absolute top-1 left-1 w-5 h-5 bg-black/70 hover:bg-red-600 rounded-full flex items-center justify-center opacity-0 group-hover/thumb:opacity-100 transition-all z-10"
               >
                 <X size={12} />
               </button>
+              <div className="absolute inset-0 bg-black/0 group-hover/thumb:bg-black/30 transition-all flex items-center justify-center opacity-0 group-hover/thumb:opacity-100 cursor-pointer">
+                <Pencil size={14} className="text-white drop-shadow" />
+              </div>
             </div>
           )}
         </div>
