@@ -18,7 +18,7 @@ import {
   MessageSquare, Mic, Zap,
 } from "lucide-react";
 import ErrorPage from "../components/ErrorPage";
-import { Skeleton } from "@/components/skeleton";
+import { Skeleton } from "@heroui/react";
 import { InitialPageData, UserStatEntry } from "@/types/globalData";
 import { variants } from "@/types/animate";
 

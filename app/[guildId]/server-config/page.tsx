@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { TextChannelSelect } from "@/app/components/TextChannelSelect";
 import { SaveBar } from "@/app/components/SaveBar";
-import { Skeleton } from "@/components/skeleton";
+import { Skeleton } from "@heroui/react";
 import ErrorPage from "@/app/components/ErrorPage";
 import type {
   ServerConfigData,

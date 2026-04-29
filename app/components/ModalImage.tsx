@@ -2,8 +2,9 @@ import { useRef, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import { X, Loader, ImageIcon, ImagePlus, ArrowRight } from "lucide-react";
-import { Button, toast } from "@heroui/react";
+import { X, ImageIcon, ArrowRight, History, Link, Upload } from "lucide-react";
+import { Button, ScrollShadow, Spinner, Skeleton } from "@heroui/react";
+import { toast } from "sonner";
 
 interface ModalImageProps {
   src?: string;
@@ -113,7 +114,7 @@ export const ModalImageUploader = ({
       onClose();
       toast.success("Imagem enviada com sucesso!");
     } catch (error) {
-      toast.danger(
+      toast.error(
         error instanceof Error ? error.message : "Erro ao enviar imagem.",
       );
       setError(
@@ -144,6 +145,7 @@ export const ModalImageUploader = ({
             width={0}
             height={0}
             className="max-w-full rounded-md border border-white/10"
+            unoptimized
             priority
           />
         </div>
@@ -161,7 +163,7 @@ export const ModalImageUploader = ({
                 onClick={onClose}
               >
                 <motion.div
-                  className="w-full max-w-md rounded-xl bg-[#171717] p-5 space-y-4 border-2 border-neutral-800"
+                  className="w-full max-w-md rounded-xl bg-[#171717] p-5 space-y-4 border border-neutral-700/80"
                   initial={{ scale: 0.9, opacity: 0, y: 20 }}
                   animate={{ scale: 1, opacity: 1, y: 0 }}
                   exit={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -182,7 +184,10 @@ export const ModalImageUploader = ({
                     </button>
                   </div>
 
-                  <label className="text-xs text-white/60">URL da imagem</label>
+                  <label className="text-xs text-white/60 flex items-center gap-1">
+                   <Link size={16}  />
+                    URL da imagem
+                  </label>
                   <div className="flex gap-2 items-end">
                     <div className="w-full">
                       <input
@@ -191,13 +196,15 @@ export const ModalImageUploader = ({
                         onChange={(e) => setImageUrl(e.target.value)}
                         placeholder="https://exemplo.com/imagem.png"
                         className="w-full rounded-md bg-zinc-800 h-9 px-2 text-sm text-white outline-none focus:ring-0 
-                        hover:outline-none border border-zinc-700 focus:border-blue-400 transition-colors"
+                        hover:outline-none border-2 border-zinc-700 focus:border-neutral-500/80 transition-colors"
+                        disabled={isUploading}
                       />
                     </div>
                     <Button
                       onClick={handleUrlConfirm}
                       className="shrink-0 rounded-md bg-blue-600 py-2 text-sm font-medium hover:bg-blue-700 cursor-pointer transition-colors"
                       isIconOnly
+                      isDisabled={!imageUrl.trim() || isUploading}
                     >
                       <ArrowRight size={14} />
                     </Button>
@@ -205,11 +212,11 @@ export const ModalImageUploader = ({
 
                   <div className="my-5 flex items-center gap-4">
                     <hr className="grow border-neutral-800" />
-                    <span className="text-xs text-gray-500">OU</span>
+                    <span className="text-[10px] text-gray-600">OU</span>
                     <hr className="grow border-neutral-800" />
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-2 border rounded-md border-neutral-800 p-4">
                     <input
                       ref={fileInputRef}
                       type="file"
@@ -218,6 +225,7 @@ export const ModalImageUploader = ({
                       onChange={(e) =>
                         e.target.files && handleFileUpload(e.target.files[0])
                       }
+                      disabled={isUploading}
                     />
 
                     <div
@@ -242,17 +250,17 @@ export const ModalImageUploader = ({
                             ? "border-blue-500 bg-blue-500/10"
                             : "border-zinc-700 bg-zinc-800"
                         }
-                        ${isUploading ? "opacity-50 pointer-events-none" : "hover:bg-zinc-500/20"}
+                        ${isUploading ? "opacity-50 pointer-events-none text-zinc-400" : "hover:bg-zinc-500/20 text-white"}
                       `}
                     >
                       {isUploading ? (
-                        <span className="flex items-center justify-center gap-2 text-white">
-                          <Loader className="h-4 w-4 animate-spin" />
+                        <span className="flex items-center justify-center gap-2">
+                          <Spinner color="current" />
                           Enviando imagem...
                         </span>
                       ) : (
                         <span className="text-white/70 font-medium">
-                          <ImagePlus className="inline-block mr-2 w-5 h-5" />
+                          <Upload size={17} className="inline-block mr-2" />
                           Enviar <span className="text-blue-400">imagem</span>
                         </span>
                       )}
@@ -262,29 +270,37 @@ export const ModalImageUploader = ({
                         {error}
                       </p>
                     )}
+
+                    <div className="mt-4">
+                      <p className="text-[10px] text-zinc-500 text-center">
+                        Formatos suportados: JPEG, PNG, GIF - Tamanho máximo: <b>5MB</b>.
+                      </p>
+                    </div>
                   </div>
 
-                  <div className="mt-6">
-                    <p className="text-[10px] text-white/40 text-center">
-                      Formatos suportados: JPEG, PNG, GIF - Tamanho máximo: 5MB.
+                  <div className="text-xs text-neutral-400 pt-4 select-none">
+                    <p className="text-zinc-400 flex items-center gap-1">
+                      <History size={18} />
+                      Uploads Recentes
                     </p>
-                  </div>
-
-                  <div className="text-xs text-neutral-400 border-t border-neutral-800 pt-4 select-none">
-                    <p>Imagens Recentes</p>
                     <div className="relative mt-2">
+                      <ScrollShadow
+                        orientation="vertical"
+                        style={{ height: 200 }}
+                        className="[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                      >
                       <div
                         ref={scrollContainerRef}
                         onWheel={handleWheelScroll}
                         onScroll={handleScroll}
-                        className="flex gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                        className="flex flex-wrap gap-2 pb-1"
                       >
                         {loadingImages ? (
-                          <div className="flex items-center justify-center w-full h-12">
-                            <Loader className="h-4 w-4 animate-spin text-white/50" />
-                          </div>
+                          Array.from({ length: 32 }, (_, index) => (
+                            <Skeleton key={index} className="w-23.75 h-12 sm:h-16 rounded-md shrink-0" />
+                          ))
                         ) : (
-                          Array.from({ length: 6 }, (_, index) => {
+                          Array.from({ length: 32 }, (_, index) => {
                             const imageUrl = recentImages[index];
                             return imageUrl ? (
                               <Image
@@ -293,17 +309,18 @@ export const ModalImageUploader = ({
                                 alt="Imagem recente"
                                 width={800}
                                 height={800}
-                                className="w-full h-12 sm:h-14 object-cover rounded-md cursor-pointer border border-transparent hover:border-blue-500 transition brightness-95 hover:brightness-110"
+                                className="w-23.75 h-12 sm:h-16 object-cover rounded-md cursor-pointer border border-transparent hover:border-neutral-500 transition brightness-95 hover:brightness-110"
                                 onClick={() => {
                                   onChange(imageUrl);
                                   onClose();
                                 }}
                                 priority
+                                unoptimized
                               />
                             ) : (
                               <div
                                 key={index}
-                                className="w-16 shrink-0 h-12 sm:h-14 bg-zinc-800 rounded-md flex items-center justify-center"
+                                className="w-23.75 shrink-0 h-12 sm:h-16 bg-zinc-800 rounded-md flex items-center justify-center"
                                 onClick={() => {}}
                               >
                                 <ImageIcon className="w-6 h-6 text-white/20" />
@@ -312,9 +329,7 @@ export const ModalImageUploader = ({
                           })
                         )}
                       </div>
-                      {isScrollable && !isScrollEnd && (
-                        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-[#171717] to-transparent" />
-                      )}
+                      </ScrollShadow>
                     </div>
                   </div>
                 </motion.div>

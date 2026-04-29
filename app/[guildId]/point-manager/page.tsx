@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import ErrorPage from "@/app/components/ErrorPage";
-import { Skeleton } from "@/components/skeleton";
+import { Skeleton } from "@heroui/react";
 import { variants } from "@/types/animate";
 import { PointManagerData, PointManagerMember } from "@/types/globalData";
 

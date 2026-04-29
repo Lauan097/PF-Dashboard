@@ -17,15 +17,9 @@ import {
 } from "lucide-react";
 import { TooltipButton } from "@/app/components/TooltipButton";
 
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/input-group";
-
 import MemberTable from "./components/MemberTable";
 import ErrorPage from "@/app/components/ErrorPage";
-import { Skeleton } from "@/components/skeleton";
+import { Skeleton, InputGroup, Kbd } from "@heroui/react";
 import { PointManagerMember, PointManagerResponse } from "@/types/globalData";
 
 interface DiscordMember {
@@ -211,18 +205,18 @@ export default function MembersPage() {
 
           <div className="max-w-80 w-full">
             <InputGroup>
-              <InputGroupAddon>
+              <InputGroup.Prefix>
                 <Search size={18} className="text-gray-400" />
-              </InputGroupAddon>
-              <InputGroupInput
+              </InputGroup.Prefix>
+              <InputGroup.Input
                 ref={searchInputRef}
                 placeholder="Buscar membro..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
-              <InputGroupAddon align="inline-end">
-                <kbd>Alt + P</kbd>
-              </InputGroupAddon>
+              <InputGroup.Suffix>
+                <Kbd>Alt + P</Kbd>
+              </InputGroup.Suffix>
             </InputGroup>
           </div>
 

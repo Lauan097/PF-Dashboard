@@ -1,14 +1,7 @@
 ﻿"use client";
 
-import { useState, useMemo } from "react";
-import {
-  Combobox,
-  ComboboxInput,
-  ComboboxContent,
-  ComboboxList,
-  ComboboxItem,
-  ComboboxEmpty,
-} from "@/components/combobox";
+import { ComboBox, Input, Label, ListBox } from "@heroui/react";
+import type { Key } from "@heroui/react";
 import { DiscordIcon } from "./DiscordIcons";
 import { normalizeText } from "@/utils/textUtils";
 
@@ -39,59 +32,41 @@ export function TextChannelSelect({
   placeholder = "Selecione um canal...",
   className = "",
   type = "text",
-  container,
   disabled = false,
 }: TextChannelSelectProps) {
-  const [searchText, setSearchText] = useState("");
-
-  const selectedName = channels.find((c) => c.id === value)?.name ?? "";
-
-  const filteredChannels = useMemo(() => {
-    if (!searchText) return channels;
-    return channels.filter((c) =>
-      normalizeText(c.name).includes(normalizeText(searchText)),
-    );
-  }, [channels, searchText]);
-
   const getRoleColor = (color: number | undefined) => {
-    if (!color || color === 0) return "inherit";
+    if (!color || color === 0) return undefined;
     return `#${color.toString(16).padStart(6, "0")}`;
   };
 
   return (
     <div className={className}>
-      {label && (
-        <label className="mb-1 block text-sm text-zinc-400">{label}</label>
-      )}
-      <Combobox
-        value={selectedName}
-        onValueChange={(name) => {
-          const ch = channels.find((c) => c.name === (name ?? ""));
-          onChange?.(ch?.id ?? "");
-          setSearchText("");
+      <ComboBox
+        fullWidth
+        isDisabled={disabled}
+        selectedKey={value || null}
+        onSelectionChange={(key: Key | null) =>
+          onChange?.((key as string) ?? "")
+        }
+        defaultFilter={(text, inputVal) => {
+          if (!inputVal) return true;
+          return normalizeText(text).includes(normalizeText(inputVal));
         }}
-        onInputValueChange={(val, { reason }) => {
-          if (reason === "input-change") {
-            setSearchText(val);
-          } else {
-            setSearchText("");
-          }
-        }}
-        filteredItems={filteredChannels.map((c) => c.name)}
-        autoHighlight
       >
-        <ComboboxInput
-          placeholder={placeholder}
-          showClear={!!value}
-          className="w-full"
-          disabled={disabled}
-        />
-        <ComboboxContent container={container}>
-          <ComboboxList>
-            {filteredChannels.map((channel) => (
-              <ComboboxItem
+        {label && <Label>{label}</Label>}
+        <ComboBox.InputGroup>
+          <Input placeholder={placeholder} />
+          <ComboBox.Trigger />
+        </ComboBox.InputGroup>
+        <ComboBox.Popover
+          className="max-h-64! [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        >
+          <ListBox>
+            {channels.map((channel) => (
+              <ListBox.Item
                 key={channel.id}
-                value={channel.name}
+                id={channel.id}
+                textValue={channel.name}
                 className="text-md font-medium text-zinc-300/90"
                 style={{
                   color:
@@ -100,21 +75,22 @@ export function TextChannelSelect({
               >
                 <DiscordIcon
                   name={type === "roles" ? "roles" : "text"}
-                  className="shrink-0"
+                  className="shrink-0 w-5 h-5"
                   style={{
                     color:
                       type === "roles"
                         ? getRoleColor(channel.color)
-                        : "text-zinc-400",
+                        : undefined,
                   }}
                 />
                 {channel.name}
-              </ComboboxItem>
+                <ListBox.ItemIndicator />
+              </ListBox.Item>
             ))}
-          </ComboboxList>
-          <ComboboxEmpty>Nenhum canal encontrado.</ComboboxEmpty>
-        </ComboboxContent>
-      </Combobox>
+            </ListBox>
+        </ComboBox.Popover>
+      </ComboBox>
     </div>
   );
 }
+
