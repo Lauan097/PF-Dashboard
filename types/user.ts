@@ -74,11 +74,9 @@ export type MemberRecordResult =
   | MemberRecordErrorResponse;
 
 // -------- OVERVIEW --------
-export interface TimeCard {
-  name: string;
-  value: number;
-  suffix: string;
-}
+export type TimeCard =
+  | { name: string; type: "time"; seconds: number }
+  | { name: string; type: "count"; value: number; suffix: string };
 
 export interface WeeklyActivity {
   name: string;

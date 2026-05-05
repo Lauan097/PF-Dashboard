@@ -1,6 +1,7 @@
 "use client";
 
 import { CheckCircle2, XCircle, Clock, Minus, History } from "lucide-react";
+import { formatDate, formatTime } from "@/utils/timeFormat";
 
 export interface WeekHistoryItem {
   weekStart: string;
@@ -13,18 +14,6 @@ export interface WeekHistoryItem {
 
 interface WeeklyHistoryProps {
   weeks: WeekHistoryItem[];
-}
-
-function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" });
-}
-
-function fmtHours(seconds: number) {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  if (h > 0 && m > 0) return `${h}h ${m}m`;
-  if (h > 0) return `${h}h`;
-  return `${m}m`;
 }
 
 const STATUS_CONFIG = {
@@ -88,16 +77,16 @@ function WeekCard({ week }: { week: WeekHistoryItem }) {
       </div>
 
       <p className="text-[10px] text-zinc-600">
-        {fmtDate(week.weekStart)} — {fmtDate(week.weekEnd)}
+        {formatDate(week.weekStart, false)} — {formatDate(week.weekEnd, false)}
       </p>
 
       <div className="flex items-end justify-between">
         <span className="text-lg font-bold text-zinc-100 leading-none">
-          {fmtHours(week.totalSeconds)}
+          {formatTime(week.totalSeconds)}
         </span>
         {week.effectiveGoalSeconds > 0 && (
           <span className="text-[10px] text-zinc-500">
-            / {fmtHours(week.effectiveGoalSeconds)}
+            / {formatTime(week.effectiveGoalSeconds)}
           </span>
         )}
       </div>

@@ -6,9 +6,6 @@ const specialCharMap: Record<string, string> = {
 };
 
 export const normalizeText = (str: string): string => {
-  // 1. Substitui caracteres do mapa especial
   const mapped = str.split('').map(char => specialCharMap[char] || char).join('');
-  
-  // 2. Normalização padrão (remove acentos e lowercase)
   return mapped.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 };

@@ -13,7 +13,9 @@ import {
   TriangleAlert,
   Plus,
   Minus,
-  History
+  History,
+  TrendingUp,
+  Timer,
 } from "lucide-react";
 import { FaCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
@@ -32,6 +34,7 @@ import {
 } from "chart.js";
 import { Line, Bar } from "react-chartjs-2";
 import { DiscordIcon } from "@/app/components/DiscordIcons";
+import { formatDate, formatTime } from "@/utils/timeFormat";
 import WeeklyGoalCard from "./WeeklyGoalCard";
 
 ChartJS.register(
@@ -183,13 +186,25 @@ export default function OverviewTab({ userId, guildId }: OverviewTabProps) {
     topPartners,
   } = overview;
 
-  function fmtDate(iso: string) {
-    return new Date(iso).toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+  function cardValue(t: (typeof timeCards)[0]) {
+    return t.type === "time"
+      ? formatTime(t.seconds)
+      : String(t.value);
   }
+
+  const TIME_CARD_ICONS: Record<string, React.ElementType> = {
+    "Última Semana":      CalendarDays,
+    "Último Mês":         CalendarDays,
+    "Média Diária (30d)": TrendingUp,
+    "Sessões Realizadas": Activity
+  };
+
+  const TIME_CARD_COLORS = [
+    "text-emerald-400",
+    "text-sky-400",
+    "text-purple-400",
+    "text-rose-400"
+  ];
 
   const weeklyChartData = {
     labels: weeklyActivity.map((w) => w.name),
@@ -283,20 +298,51 @@ export default function OverviewTab({ userId, guildId }: OverviewTabProps) {
           <span className="text-zinc-400 text-xs font-semibold flex items-center gap-2 pb-2 border-b border-white/5">
             <Clock size={14} className="text-blue-500" /> Tempo em Serviço
           </span>
-          {timeCards.map((t, i) => (
-            <div
-              key={i}
-              className="flex items-center justify-between bg-[#222] p-2.5 rounded-xl border border-white/5"
-            >
-              <span className="text-zinc-300 text-xs flex items-center gap-2">
-                <CalendarDays size={13} className="text-blue-400" />
-                {t.name}
-              </span>
-              <span className="text-blue-400 font-semibold text-sm">
-                {t.value}{t.suffix === "h" ? "h" : ` ${t.suffix}`}
-              </span>
-            </div>
-          ))}
+
+          {(() => {
+            const hero = timeCards.find((t) => t.name === "Tempo Total");
+            return hero ? (
+              <div className="flex items-center gap-3 p-3.5 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center shrink-0">
+                  <Clock size={20} className="text-blue-400" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-blue-400/70 uppercase tracking-wider font-medium">Tempo Total</p>
+                  <p className="text-2xl font-bold text-blue-300 leading-tight">
+                    {cardValue(hero)}
+                  </p>
+                </div>
+              </div>
+            ) : null;
+          })()}
+
+          <div className="grid grid-cols-2 gap-2 flex-1 h-80">
+            {timeCards
+              .filter((t) => t.name !== "Tempo Total")
+              .map((t, i) => {
+                const Icon = TIME_CARD_ICONS[t.name] ?? CalendarDays;
+                const color = TIME_CARD_COLORS[i] ?? "text-zinc-200";
+                return (
+                  <div
+                    key={t.name}
+                    className="flex flex-col justify-between bg-[#222] p-2.5 rounded-xl border border-white/5"
+                  >
+                    <p className="text-xs text-zinc-500 gap-1 flex items-center">
+                      <Icon size={12} className={color} />
+                      {t.name}
+                    </p>
+                    <p className={`text-xl font-bold mt-1 ${color}`}>
+                      {cardValue(t)}
+                      {t.type === "count" && (
+                        <span className="text-xs text-zinc-600 font-normal ml-1">
+                          {t.suffix}
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                );
+              })}
+          </div>
         </div>
 
         <div className="bg-[#1a1a1a] border border-white/5 p-4 rounded-2xl flex flex-col gap-3 h-100">
@@ -328,7 +374,7 @@ export default function OverviewTab({ userId, guildId }: OverviewTabProps) {
                         ) : (
                           <FaCircle className="text-blue-400" size={16} />
                         )}
-                        {r.title} <p className="text-zinc-400 text-[9px]">{fmtDate(r.date)}</p>
+                        {r.title} <p className="text-zinc-400 text-[9px]">{formatDate(r.date)}</p>
                         <Accordion.Indicator />
                       </Accordion.Trigger>
                     </Accordion.Heading>

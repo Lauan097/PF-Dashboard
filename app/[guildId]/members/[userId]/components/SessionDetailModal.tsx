@@ -8,26 +8,15 @@ import {
   Chip,
   Separator,
 } from "@heroui/react";
-import {
-  Clock,
-  Users,
-  FileText,
-  Pause,
-  ExternalLink,
-  CircleAlert,
-  Timer,
-  Activity,
-  Hash,
-  CalendarDays,
-  Crown,
-  Shield,
-} from "lucide-react";
+import { Clock, Users, FileText, Pause, ExternalLink, CircleAlert, Timer, Activity, Hash, CalendarDays, Crown, Shield } from "lucide-react";
+import { formatDateTime, formatTime } from "@/utils/timeFormat";
 
 interface Participant {
   id: string;
   userId: string;
   role: "Leader" | "Member";
   joinedAt: string;
+  additional: boolean | null;
   member: {
     gameName: string | null;
     nicknameDc: string | null;
@@ -84,23 +73,6 @@ const STATUS_LABELS: Record<string, { label: string; color: "success" | "warning
   Cancelled: { label: "Cancelada", color: "danger" },
 };
 
-function fmtSeconds(seconds: number) {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  if (h > 0 && m > 0) return `${h}h ${m}m`;
-  if (h > 0) return `${h}h`;
-  return `${m}m`;
-}
-
-function fmtDateTime(iso: string) {
-  return new Date(iso).toLocaleString("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 
 function InfoRow({
   icon: Icon,
@@ -124,6 +96,27 @@ function InfoRow({
 
 function memberName(m: { gameName: string | null; nicknameDc: string | null; userTag: string | null }) {
   return m.gameName || m.nicknameDc || m.userTag || "Membro";
+}
+
+function ParticipantRow({ p }: { p: Participant }) {
+  return (
+    <div className="flex items-center justify-between px-3 py-2">
+      <div className="flex items-center gap-2">
+        {p.role === "Leader" ? (
+          <Crown size={11} className="text-yellow-400 shrink-0" />
+        ) : (
+          <Shield size={11} className="text-zinc-500 shrink-0" />
+        )}
+        <span className="text-xs text-zinc-200">{memberName(p.member)}</span>
+        {p.member.rank && (
+          <span className="text-[10px] text-zinc-600">{p.member.rank}</span>
+        )}
+      </div>
+      <span className="text-[10px] text-zinc-500">
+        {new Date(p.joinedAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+      </span>
+    </div>
+  );
 }
 
 export default function SessionDetailModal({
@@ -201,7 +194,7 @@ export default function SessionDetailModal({
                 </Modal.Heading>
                 {detail && (
                   <p className="text-xs text-zinc-500 mt-0.5">
-                    {fmtDateTime(detail.startDate)}
+                    {formatDateTime(detail.startDate)}
                   </p>
                 )}
               </div>
@@ -241,21 +234,21 @@ export default function SessionDetailModal({
 
                   {/* Informações gerais */}
                   <div className="bg-zinc-900/60 border border-white/5 rounded-xl divide-y divide-white/5">
-                    <InfoRow icon={CalendarDays} label="Início" value={fmtDateTime(detail.startDate)} iconClass="text-blue-400" />
+                    <InfoRow icon={CalendarDays} label="Início" value={formatDateTime(detail.startDate)} iconClass="text-blue-400" />
                     {detail.finishedDate && (
-                      <InfoRow icon={CalendarDays} label="Fim" value={fmtDateTime(detail.finishedDate)} iconClass="text-emerald-400" />
+                      <InfoRow icon={CalendarDays} label="Fim" value={formatDateTime(detail.finishedDate)} iconClass="text-emerald-400" />
                     )}
                     <InfoRow
                       icon={Timer}
                       label="Duração total"
-                      value={detail.totalSeconds ? fmtSeconds(detail.totalSeconds) : "—"}
+                      value={detail.totalSeconds ? formatTime(detail.totalSeconds) : "—"}
                       iconClass="text-purple-400"
                     />
                     {pauseTotal > 0 && (
                       <InfoRow
                         icon={Pause}
                         label="Tempo pausado"
-                        value={fmtSeconds(pauseTotal)}
+                        value={formatTime(pauseTotal)}
                         iconClass="text-yellow-400"
                       />
                     )}
@@ -294,36 +287,52 @@ export default function SessionDetailModal({
                   )}
 
                   {/* Participantes */}
-                  {detail.participants.length > 0 && (
-                    <div className="space-y-1.5">
-                      <div className="flex items-center gap-1.5 text-xs text-zinc-400 font-medium">
-                        <Users size={12} />
-                        Participantes ({detail.participants.length})
-                      </div>
-                      <div className="bg-zinc-900/60 border border-white/5 rounded-xl divide-y divide-white/5">
-                        {detail.participants.map((p) => (
-                          <div key={p.id} className="flex items-center justify-between px-3 py-2">
-                            <div className="flex items-center gap-2">
-                              {p.role === "Leader" ? (
-                                <Crown size={11} className="text-yellow-400 shrink-0" />
-                              ) : (
-                                <Shield size={11} className="text-zinc-500 shrink-0" />
-                              )}
-                              <span className="text-xs text-zinc-200">
-                                {memberName(p.member)}
-                              </span>
-                              {p.member.rank && (
-                                <span className="text-[10px] text-zinc-600">{p.member.rank}</span>
-                              )}
+                  {detail.participants.length > 0 && (() => {
+                    const finishedMs = detail.finishedDate
+                      ? new Date(detail.finishedDate).getTime()
+                      : null;
+
+                    const isAdditional = (p: Participant) =>
+                      p.additional === true ||
+                      (finishedMs !== null &&
+                        Math.abs(new Date(p.joinedAt).getTime() - finishedMs) < 10_000);
+
+                    const initial = detail.participants.filter((p) => !isAdditional(p));
+                    const additional = detail.participants.filter(isAdditional);
+
+                    return (
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-1.5 text-xs text-zinc-400 font-medium">
+                          <Users size={12} />
+                          Participantes ({detail.participants.length})
+                        </div>
+
+                        {/* Iniciais */}
+                        {initial.length > 0 && (
+                          <>
+                            <p className="text-[10px] text-zinc-600 uppercase tracking-wider px-1">Iniciais</p>
+                            <div className="bg-zinc-900/60 border border-white/5 rounded-xl divide-y divide-white/5">
+                              {initial.map((p) => (
+                                <ParticipantRow key={p.id} p={p} />
+                              ))}
                             </div>
-                            <span className="text-[10px] text-zinc-500">
-                              {new Date(p.joinedAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
-                            </span>
-                          </div>
-                        ))}
+                          </>
+                        )}
+
+                        {/* Adicionais */}
+                        {additional.length > 0 && (
+                          <>
+                            <p className="text-[10px] text-zinc-600 uppercase tracking-wider px-1 pt-1">Adicionais</p>
+                            <div className="bg-zinc-900/60 border border-white/5 rounded-xl divide-y divide-white/5">
+                              {additional.map((p) => (
+                                <ParticipantRow key={p.id} p={p} />
+                              ))}
+                            </div>
+                          </>
+                        )}
                       </div>
-                    </div>
-                  )}
+                    );
+                  })()}
 
                   {/* Pausas */}
                   {detail.pauses.length > 0 && (
@@ -339,15 +348,15 @@ export default function SessionDetailModal({
                               <span className="text-xs text-zinc-200">{pause.reason}</span>
                               {pause.finishedAt && (
                                 <span className="text-[10px] text-zinc-500">
-                                  {fmtSeconds(
+                                  {formatTime(
                                     (new Date(pause.finishedAt).getTime() - new Date(pause.startedAt).getTime()) / 1000,
                                   )}
                                 </span>
                               )}
                             </div>
                             <div className="text-[10px] text-zinc-600 flex items-center gap-2">
-                              <span>{fmtDateTime(pause.startedAt)}</span>
-                              {pause.finishedAt && <span>→ {fmtDateTime(pause.finishedAt)}</span>}
+                              <span>{formatDateTime(pause.startedAt)}</span>
+                              {pause.finishedAt && <span>→ {formatDateTime(pause.finishedAt)}</span>}
                               {!pause.finishedAt && <span className="text-yellow-500">Em andamento</span>}
                             </div>
                           </div>

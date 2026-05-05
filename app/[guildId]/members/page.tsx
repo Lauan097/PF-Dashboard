@@ -5,11 +5,8 @@ import { motion } from "framer-motion";
 import { useParams } from "next/navigation";
 import { Dropdown, Separator } from "@heroui/react";
 import {
-  CircleCheck,
-  CircleMinus,
-  CloudOff,
+  Check,
   Filter,
-  Moon,
   RefreshCw,
   Search,
   Trash2,
@@ -21,6 +18,7 @@ import MemberTable from "./components/MemberTable";
 import ErrorPage from "@/app/components/ErrorPage";
 import { Skeleton, InputGroup, Kbd } from "@heroui/react";
 import { PointManagerMember, PointManagerResponse } from "@/types/globalData";
+import DiscordStatusIcon from "@/app/components/DiscordStatusIcon";
 
 interface DiscordMember {
   id: string;
@@ -73,6 +71,7 @@ export default function MembersPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [goalFilter, setGoalFilter] = useState<"met" | "notMet" | null>(null);
+  const [activeFilter, setActiveFilter] = useState(false);
   const [dateSort, setDateSort] = useState<"asc" | "desc">("desc");
 
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -152,6 +151,13 @@ export default function MembersPage() {
       });
     }
 
+    if (activeFilter) {
+      result = result.filter((m) => {
+        const pmMember = pointManagerMembers.find((pm) => pm.userId === m.id);
+        return pmMember?.status === "Active";
+      });
+    }
+
     result.sort((a, b) => {
       const dateA = new Date(a.joinedAt).getTime();
       const dateB = new Date(b.joinedAt).getTime();
@@ -165,8 +171,7 @@ export default function MembersPage() {
     members,
     search,
     statusFilter,
-    goalFilter,
-    dateSort,
+    goalFilter,    activeFilter,    dateSort,
     pointManagerMembers,
   ]);
 
@@ -174,6 +179,7 @@ export default function MembersPage() {
     setSearch("");
     setStatusFilter(null);
     setGoalFilter(null);
+    setActiveFilter(false);
     setDateSort("desc");
   };
 
@@ -230,7 +236,7 @@ export default function MembersPage() {
                   isIconOnly
                   icon={<Filter />}
                   tooltipText="Filtrar"
-                  buttonClassName={`bg-[#18181B] border cursor-pointer transition-colors ${statusFilter || goalFilter ? "border-blue-500/50 text-blue-400" : "border-[#3d3d3d] hover:bg-neutral-800/60 text-white/50 hover:text-white"}`}
+                  buttonClassName={`bg-[#18181B] border cursor-pointer transition-colors ${statusFilter || goalFilter || activeFilter ? "border-blue-500/50 text-blue-400" : "border-[#3d3d3d] hover:bg-neutral-800/60 text-white/50 hover:text-white"}`}
                 />
               </div>
               <Dropdown.Popover
@@ -285,10 +291,7 @@ export default function MembersPage() {
                           }
                         >
                           Disponível
-                          <CircleCheck
-                            size={16}
-                            className="text-emerald-500 ml-auto"
-                          />
+                          <DiscordStatusIcon name="online" className="ml-auto" />
                         </Dropdown.Item>
                         <Dropdown.Item
                           onClick={() => setStatusFilter("idle")}
@@ -299,7 +302,7 @@ export default function MembersPage() {
                           }
                         >
                           Ausente
-                          <Moon size={16} className="text-yellow-500 ml-auto" />
+                          <DiscordStatusIcon name="idle" className="ml-auto" />
                         </Dropdown.Item>
                         <Dropdown.Item
                           onClick={() => setStatusFilter("dnd")}
@@ -310,10 +313,7 @@ export default function MembersPage() {
                           }
                         >
                           Não Perturbe
-                          <CircleMinus
-                            size={16}
-                            className="text-red-500 ml-auto"
-                          />
+                          <DiscordStatusIcon name="dnd" className="ml-auto" />
                         </Dropdown.Item>
                         <Dropdown.Item
                           onClick={() => setStatusFilter("offline")}
@@ -324,10 +324,7 @@ export default function MembersPage() {
                           }
                         >
                           Offline
-                          <CloudOff
-                            size={16}
-                            className="text-gray-500 ml-auto"
-                          />
+                          <DiscordStatusIcon name="offline" className="ml-auto" />
                         </Dropdown.Item>
                       </Dropdown.Menu>
                     </Dropdown.Popover>
@@ -348,7 +345,7 @@ export default function MembersPage() {
                               : ""
                           }
                         >
-                          Meta Concluída
+                          Concluída
                         </Dropdown.Item>
                         <Dropdown.Item
                           onClick={() => setGoalFilter("notMet")}
@@ -358,13 +355,21 @@ export default function MembersPage() {
                               : ""
                           }
                         >
-                          Meta Não Concluída
+                          Não Concluída
                         </Dropdown.Item>
                       </Dropdown.Menu>
                     </Dropdown.Popover>
                   </Dropdown.SubmenuTrigger>
 
-                  <Separator className="bg-white/10" />
+                  <Dropdown.Item
+                    onClick={() => setActiveFilter((v) => !v)}
+                    className={activeFilter ? "bg-white/10" : ""}
+                  >
+                    Fichas Ativas
+                    {activeFilter && <Check className="text-green-400 ml-auto" size={16} />}
+                  </Dropdown.Item>
+
+                  <Separator />
 
                   <Dropdown.Item
                     onClick={resetFilters}

@@ -8,3 +8,11 @@
 - Sempre crie uma rota na api local do next pra chamar o websocket, nunca chame diretamente no frontend (exceto para rotas públicas do websocket que não contém informações sensíveis).
 - Sempre opte por usar os Components V2 do Discord nas mensagens do bot, pois eles são mais bonitos! Aqui o link da documentação dos components v2 e dos novos modais do Discord: https://docs.discord.com/developers/components/reference
 - Na UI eu uso a biblioteca HeroUI, então sempre opte por componentes dela. Documentação: https://heroui.com/docs/react/components
+
+
+# Estrutura
+
+- Pasta discord: código do bot, incluindo os comandos, eventos e o websocket.
+- Pasta dashboard: código do frontend do dashboard, incluindo as páginas e componentes.
+- Pasta /utils no dashboard: código compartilhado entre as páginas do dashboard, como funções de formatação de data, por exemplo.
+- Pasta /types no dashboard: tipos TypeScript compartilhados entre as páginas do dashboard.

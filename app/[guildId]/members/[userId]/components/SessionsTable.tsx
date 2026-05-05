@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Table, Skeleton, Chip, EmptyState } from "@heroui/react";
+import { useEffect, useState, useMemo } from "react";
+import { Table, Skeleton, Chip, EmptyState, Pagination } from "@heroui/react";
 import { Clock, CircleAlert } from "lucide-react";
 import SessionDetailModal from "./SessionDetailModal";
+import { formatDate, formatTime } from "@/utils/timeFormat";
 
 interface Session {
   id: string;
@@ -58,6 +59,14 @@ export default function SessionsTable({ userId, guildId }: SessionsTableProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
   const [selectedSessionIndex, setSelectedSessionIndex] = useState<number | null>(null);
+  const [page, setPage] = useState(1);
+
+  const PAGE_SIZE = 50;
+  const totalPages = Math.ceil(sessions.length / PAGE_SIZE);
+  const paginatedSessions = useMemo(
+    () => sessions.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [sessions, page],
+  );
 
   useEffect(() => {
     if (!guildId || !userId) return;
@@ -66,6 +75,7 @@ export default function SessionsTable({ userId, guildId }: SessionsTableProps) {
     async function fetchSessions() {
       setLoading(true);
       setError(null);
+      setPage(1);
       try {
         const res = await fetch(
           `/api/data/user/sessions?guildId=${guildId}&userId=${userId}`,
@@ -150,7 +160,7 @@ export default function SessionsTable({ userId, guildId }: SessionsTableProps) {
                 <Table.Column>Status</Table.Column>
               </Table.Header>
               <Table.Body
-                items={sessions}
+                items={paginatedSessions}
                 renderEmptyState={() => (
                   <EmptyState
                     title="Nenhuma sessão encontrada"
@@ -173,7 +183,7 @@ export default function SessionsTable({ userId, guildId }: SessionsTableProps) {
                       </Table.Cell>
                       <Table.Cell>
                         <span className="text-xs text-zinc-300">
-                          {fmtDate(session.startDate)}
+                          {formatDate(session.startDate)}
                         </span>
                       </Table.Cell>
                       <Table.Cell>
@@ -183,7 +193,7 @@ export default function SessionsTable({ userId, guildId }: SessionsTableProps) {
                       </Table.Cell>
                       <Table.Cell>
                         <span className="text-xs text-zinc-300">
-                          {session.totalSeconds ? fmtSeconds(session.totalSeconds) : "—"}
+                          {session.totalSeconds ? formatTime(session.totalSeconds) : "—"}
                         </span>
                       </Table.Cell>
                       <Table.Cell>
@@ -210,6 +220,60 @@ export default function SessionsTable({ userId, guildId }: SessionsTableProps) {
               </Table.Body>
             </Table.Content>
           </Table.ScrollContainer>
+          {totalPages > 1 && (
+            <Table.Footer className="flex justify-center py-3">
+              <Pagination size="sm">
+                <Pagination.Content>
+                  <Pagination.Item>
+                    <Pagination.Previous
+                      isDisabled={page === 1}
+                      onPress={() => setPage((p) => p - 1)}
+                    >
+                      <Pagination.PreviousIcon />
+                    </Pagination.Previous>
+                  </Pagination.Item>
+
+                  {(() => {
+                    const pages: (number | "...")[] = [];
+                    if (totalPages <= 7) {
+                      for (let i = 1; i <= totalPages; i++) pages.push(i);
+                    } else {
+                      pages.push(1);
+                      if (page > 3) pages.push("...");
+                      for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) pages.push(i);
+                      if (page < totalPages - 2) pages.push("...");
+                      pages.push(totalPages);
+                    }
+                    return pages.map((p, i) =>
+                      p === "..." ? (
+                        <Pagination.Item key={`ellipsis-${i}`}>
+                          <Pagination.Ellipsis />
+                        </Pagination.Item>
+                      ) : (
+                        <Pagination.Item key={p}>
+                          <Pagination.Link
+                            isActive={p === page}
+                            onPress={() => setPage(p)}
+                          >
+                            {p}
+                          </Pagination.Link>
+                        </Pagination.Item>
+                      ),
+                    );
+                  })()}
+
+                  <Pagination.Item>
+                    <Pagination.Next
+                      isDisabled={page === totalPages}
+                      onPress={() => setPage((p) => p + 1)}
+                    >
+                      <Pagination.NextIcon />
+                    </Pagination.Next>
+                  </Pagination.Item>
+                </Pagination.Content>
+              </Pagination>
+            </Table.Footer>
+          )}
         </Table>
       </div>
 

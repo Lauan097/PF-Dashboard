@@ -13,17 +13,10 @@ import {
   Calendar1,
 } from "lucide-react";
 import type { WeeklyGoalData } from "@/types/user";
+import { formatDate } from "@/utils/timeFormat";
 
 interface WeeklyGoalCardProps {
   data: WeeklyGoalData;
-}
-
-function fmtDateTime(iso: string) {
-  return new Date(iso).toLocaleDateString("pt-BR", {
-    weekday: "long",
-    day: "2-digit",
-    month: "short",
-  });
 }
 
 function StatBox({
@@ -68,7 +61,7 @@ export default function WeeklyGoalCard({ data }: WeeklyGoalCardProps) {
       ? Math.round((currentWeekHours / sessionsThisWeek) * 10) / 10
       : 0;
   const todayDow = new Date().getDay();
-  const daysLeft = todayDow === 0 ? 0 : 7 - todayDow;
+  const daysLeft = 6 - todayDow; // Semana Dom-Sab: sábado (6) = 0 dias restantes
   const requiredDaily =
     daysLeft > 0 ? Math.round((remainingHours / daysLeft) * 10) / 10 : remainingHours;
 
@@ -132,7 +125,7 @@ export default function WeeklyGoalCard({ data }: WeeklyGoalCardProps) {
             </p>
             {goalMetAt && (
               <p className="text-zinc-400 text-[11px] mt-0.5 truncate">
-                {goalMetDay} · {fmtDateTime(goalMetAt)}
+                {goalMetDay} · {formatDate(goalMetAt, false)}
               </p>
             )}
           </div>
