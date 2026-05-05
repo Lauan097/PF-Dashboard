@@ -95,14 +95,14 @@ export type WeeklyGoalStatus =
   | "completed";
 
 export interface WeeklyGoalData {
-  goalHours: number;
-  currentWeekHours: number;
+  goalSeconds: number;
+  currentWeekSeconds: number;
   sessionsThisWeek: number;
   status: WeeklyGoalStatus;
   goalMetAt: string | null;
   goalMetDay: string | null;
   isRecord: boolean;
-  bestWeekHours: number;
+  bestWeekSeconds: number;
   progressPercent: number;
 }
 

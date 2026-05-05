@@ -13,7 +13,7 @@ import {
   Calendar1,
 } from "lucide-react";
 import type { WeeklyGoalData } from "@/types/user";
-import { formatDate } from "@/utils/timeFormat";
+import { formatDate, formatTime } from "@/utils/timeFormat";
 
 interface WeeklyGoalCardProps {
   data: WeeklyGoalData;
@@ -44,26 +44,23 @@ function StatBox({
 export default function WeeklyGoalCard({ data }: WeeklyGoalCardProps) {
   const {
     status,
-    goalHours,
-    currentWeekHours,
+    goalSeconds,
+    currentWeekSeconds,
     progressPercent,
     sessionsThisWeek,
     goalMetAt,
     goalMetDay,
     isRecord,
-    bestWeekHours,
+    bestWeekSeconds,
   } = data;
 
-  // Valores derivados calculados no cliente
-  const remainingHours = Math.max(0, goalHours - currentWeekHours);
-  const avgHoursPerSession =
-    sessionsThisWeek > 0
-      ? Math.round((currentWeekHours / sessionsThisWeek) * 10) / 10
-      : 0;
+  const remainingSeconds = Math.max(0, goalSeconds - currentWeekSeconds);
+  const avgSecsPerSession =
+    sessionsThisWeek > 0 ? Math.round(currentWeekSeconds / sessionsThisWeek) : 0;
   const todayDow = new Date().getDay();
-  const daysLeft = 6 - todayDow; // Semana Dom-Sab: sábado (6) = 0 dias restantes
-  const requiredDaily =
-    daysLeft > 0 ? Math.round((remainingHours / daysLeft) * 10) / 10 : remainingHours;
+  const daysLeft = 6 - todayDow;
+  const requiredDailySeconds =
+    daysLeft > 0 ? Math.round(remainingSeconds / daysLeft) : remainingSeconds;
 
   if (status === "no_goal") {
     return (
@@ -75,9 +72,9 @@ export default function WeeklyGoalCard({ data }: WeeklyGoalCardProps) {
             Configure uma meta semanal na edição da ficha.
           </p>
         </div>
-        {bestWeekHours > 0 && (
+        {bestWeekSeconds > 0 && (
           <div className="grid grid-cols-2 gap-2">
-            <StatBox icon={Flame} label="Melhor Semana" value={`${bestWeekHours}h`} />
+            <StatBox icon={Flame} label="Melhor Semana" value={formatTime(bestWeekSeconds)} />
             <StatBox icon={Hash} label="Sessões (total)" value={`${sessionsThisWeek}`} />
           </div>
         )}
@@ -93,21 +90,21 @@ export default function WeeklyGoalCard({ data }: WeeklyGoalCardProps) {
           <p className="text-zinc-400 text-sm font-medium">Semana não iniciada</p>
           <p className="text-zinc-500 text-xs">
             Meta:{" "}
-            <span className="text-zinc-300 font-semibold">{goalHours}h</span>
+            <span className="text-zinc-300 font-semibold">{formatTime(goalSeconds)}</span>
           </p>
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <StatBox icon={Calendar1} label="Meta Semanal" value={`${goalHours}h`} color="text-purple-300" />
+          <StatBox icon={Calendar1} label="Meta Semanal" value={formatTime(goalSeconds)} color="text-purple-300" />
           <StatBox
             icon={Flame}
             label="Melhor Semana"
-            value={bestWeekHours > 0 ? `${bestWeekHours}h` : "—"}
+            value={bestWeekSeconds > 0 ? formatTime(bestWeekSeconds) : "—"}
           />
           <StatBox icon={Timer} label="Dias Restantes" value={`${daysLeft}`} />
           <StatBox
             icon={Gauge}
             label="Ritmo Necessário"
-            value={daysLeft > 0 ? `${Math.round((goalHours / daysLeft) * 10) / 10}h/dia` : "—"}
+            value={daysLeft > 0 ? `${formatTime(Math.round(goalSeconds / daysLeft))}/dia` : "—"}
           />
         </div>
       </div>
@@ -147,8 +144,8 @@ export default function WeeklyGoalCard({ data }: WeeklyGoalCardProps) {
 
       <div className="space-y-1.5">
         <div className="flex justify-between text-[11px] text-zinc-500">
-          <span>{currentWeekHours}h concluídas</span>
-          <span>Meta: {goalHours}h</span>
+          <span>{formatTime(currentWeekSeconds)} concluídas</span>
+          <span>Meta: {formatTime(goalSeconds)}</span>
         </div>
         <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
           <div
@@ -165,12 +162,12 @@ export default function WeeklyGoalCard({ data }: WeeklyGoalCardProps) {
         <StatBox
           icon={Flame}
           label="Melhor Semana"
-          value={bestWeekHours > 0 ? `${bestWeekHours}h` : "Não achei..."}
+          value={bestWeekSeconds > 0 ? formatTime(bestWeekSeconds) : "Não achei..."}
         />
         <StatBox
           icon={Timer}
           label={status === "completed" ? "Total Atingido" : "Restante"}
-          value={status === "completed" ? `${currentWeekHours}h` : `${remainingHours}h`}
+          value={status === "completed" ? formatTime(currentWeekSeconds) : formatTime(remainingSeconds)}
           color={status === "completed" ? "text-green-400" : "text-zinc-200"}
         />
         <StatBox
@@ -178,8 +175,8 @@ export default function WeeklyGoalCard({ data }: WeeklyGoalCardProps) {
           label={status === "completed" ? "Média/Sessão" : "Ritmo Necessário"}
           value={
             status === "completed"
-              ? avgHoursPerSession > 0 ? `${avgHoursPerSession}h` : "—"
-              : daysLeft > 0 ? `${requiredDaily}h/dia` : "—"
+              ? avgSecsPerSession > 0 ? formatTime(avgSecsPerSession) : "—"
+              : daysLeft > 0 ? `${formatTime(requiredDailySeconds)}/dia` : "—"
           }
         />
       </div>

@@ -13,7 +13,8 @@ import {
   Ban,
   Rocket,
   TriangleAlert,
-  House
+  House,
+  RefreshCcw
 } from "lucide-react";
 import { Tabs, Button, ButtonGroup, Separator, Skeleton } from "@heroui/react";
 import OverviewTab from "./components/OverviewTab";
@@ -55,6 +56,8 @@ export default function UserProfilePage() {
   const userId = params.userId as string;
 
   const [activeTab, setActiveTab] = useState<TabId>("overview");
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [modalUpOpen, setModalUpOpen] = useState(false);
   const [modalBanOpen, setModalBanOpen] = useState(false);
   const [modalWarningOpen, setModalWarningOpen] = useState(false);
@@ -223,7 +226,7 @@ export default function UserProfilePage() {
               </Tabs.List>
             </Tabs.ListContainer>
           </Tabs>
-          <div>
+          <div className="space-x-2">
             <ButtonGroup size="md" variant="secondary">
               <Button onClick={() => setModalBanOpen(true)}>
                 <Ban className="text-red-400" />
@@ -239,6 +242,17 @@ export default function UserProfilePage() {
                 <Rocket className="text-emerald-400" />
               </Button>
             </ButtonGroup>
+            <Button 
+              isIconOnly 
+              variant={isRefreshing ? "secondary" : "tertiary"}
+              onClick={() => {
+                setRefreshKey((k) => k + 1);
+                setIsRefreshing(true);
+                setTimeout(() => setIsRefreshing(false), 700);
+              }}
+            >
+              <RefreshCcw className={isRefreshing ? "animate-spin" : ""} />
+            </Button>
           </div>
         </div>
       </div>
@@ -281,11 +295,11 @@ export default function UserProfilePage() {
             }}
           >
             {activeTab === "overview" ? (
-              <OverviewTab userId={userId} guildId={guildId} />
+              <OverviewTab key={refreshKey} userId={userId} guildId={guildId} />
             ) : activeTab === "services" ? (
-              <ServicesTab userId={userId} guildId={guildId} />
+              <ServicesTab key={refreshKey} userId={userId} guildId={guildId} />
             ) : (
-              <RecordTab userId={userId} guildId={guildId} />
+              <RecordTab key={refreshKey} userId={userId} guildId={guildId} />
             )}
           </motion.div>
         </AnimatePresence>
