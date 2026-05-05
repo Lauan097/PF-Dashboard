@@ -193,9 +193,12 @@ export default function MembersPage() {
       <div className="min-h-[80vh] p-2 flex flex-col shadow-xl">
         <div className="bg-[#3d3d3d] p-2 rounded-md flex items-center border border-white/5 mb-4">
           {loading ? (
-            <Skeleton className="w-14 h-6 mb-0.5" />
+            <Skeleton className="w-14 h-8 mx-2" />
           ) : (
-            <h1 className="text-xl font-rajdhani font-semibold flex items-center gap-2 text-neutral-300 select-none ml-2">
+            <h1 
+              className="text-md font-rajdhani font-semibold flex items-center gap-2 text-neutral-400 select-none 
+              ml-2 bg-[#19191C] px-2 py-1.5 rounded-xl"
+            >
               <UsersRound size={18} className="text-zinc-400" />
               {filteredMembers.length}
             </h1>
@@ -231,23 +234,23 @@ export default function MembersPage() {
                 />
               </div>
               <Dropdown.Popover
-                className="shadow-2xl min-w-38 border border-white/10 rounded-lg"
+                className="shadow-2xl min-w-38 border border-white/10"
                 placement="left top"
               >
                 <Dropdown.Menu>
                   <Dropdown.SubmenuTrigger>
-                    <Dropdown.Item className="rounded-lg">
+                    <Dropdown.Item className="">
                       Filtrar Data
                       <Dropdown.SubmenuIndicator />
                     </Dropdown.Item>
-                    <Dropdown.Popover className="min-w-38 rounded-lg">
+                    <Dropdown.Popover className="min-w-38">
                       <Dropdown.Menu>
                         <Dropdown.Item
                           onClick={() => setDateSort("desc")}
                           className={
                             dateSort === "desc"
-                              ? "bg-white/10 rounded-lg"
-                              : "rounded-lg"
+                              ? "bg-white/10"
+                              : ""
                           }
                         >
                           Mais Recentes
@@ -256,8 +259,8 @@ export default function MembersPage() {
                           onClick={() => setDateSort("asc")}
                           className={
                             dateSort === "asc"
-                              ? "bg-white/10 rounded-lg"
-                              : "rounded-lg"
+                              ? "bg-white/10"
+                              : ""
                           }
                         >
                           Mais Antigos
@@ -267,18 +270,18 @@ export default function MembersPage() {
                   </Dropdown.SubmenuTrigger>
 
                   <Dropdown.SubmenuTrigger>
-                    <Dropdown.Item className="rounded-lg">
+                    <Dropdown.Item className="">
                       Filtrar Status
                       <Dropdown.SubmenuIndicator />
                     </Dropdown.Item>
-                    <Dropdown.Popover className="min-w-38 rounded-lg">
+                    <Dropdown.Popover className="min-w-38">
                       <Dropdown.Menu>
                         <Dropdown.Item
                           onClick={() => setStatusFilter("online")}
                           className={
                             statusFilter === "online"
-                              ? "bg-white/10 rounded-lg"
-                              : "rounded-lg"
+                              ? "bg-white/10"
+                              : ""
                           }
                         >
                           Disponível
@@ -291,8 +294,8 @@ export default function MembersPage() {
                           onClick={() => setStatusFilter("idle")}
                           className={
                             statusFilter === "idle"
-                              ? "bg-white/10 rounded-lg"
-                              : "rounded-lg"
+                              ? "bg-white/10"
+                              : ""
                           }
                         >
                           Ausente
@@ -302,8 +305,8 @@ export default function MembersPage() {
                           onClick={() => setStatusFilter("dnd")}
                           className={
                             statusFilter === "dnd"
-                              ? "bg-white/10 rounded-lg"
-                              : "rounded-lg"
+                              ? "bg-white/10"
+                              : ""
                           }
                         >
                           Não Perturbe
@@ -316,8 +319,8 @@ export default function MembersPage() {
                           onClick={() => setStatusFilter("offline")}
                           className={
                             statusFilter === "offline"
-                              ? "bg-white/10 rounded-lg"
-                              : "rounded-lg"
+                              ? "bg-white/10"
+                              : ""
                           }
                         >
                           Offline
@@ -331,18 +334,18 @@ export default function MembersPage() {
                   </Dropdown.SubmenuTrigger>
 
                   <Dropdown.SubmenuTrigger>
-                    <Dropdown.Item className="rounded-lg">
+                    <Dropdown.Item className="">
                       Filtrar por Meta
                       <Dropdown.SubmenuIndicator />
                     </Dropdown.Item>
-                    <Dropdown.Popover className="min-w-38 rounded-lg">
+                    <Dropdown.Popover className="min-w-38">
                       <Dropdown.Menu>
                         <Dropdown.Item
                           onClick={() => setGoalFilter("met")}
                           className={
                             goalFilter === "met"
-                              ? "bg-white/10 rounded-lg"
-                              : "rounded-lg"
+                              ? "bg-white/10"
+                              : ""
                           }
                         >
                           Meta Concluída
@@ -351,8 +354,8 @@ export default function MembersPage() {
                           onClick={() => setGoalFilter("notMet")}
                           className={
                             goalFilter === "notMet"
-                              ? "bg-white/10 rounded-lg"
-                              : "rounded-lg"
+                              ? "bg-white/10"
+                              : ""
                           }
                         >
                           Meta Não Concluída
@@ -365,7 +368,7 @@ export default function MembersPage() {
 
                   <Dropdown.Item
                     onClick={resetFilters}
-                    className="rounded-lg hover:bg-red-400/15 text-red-400"
+                    className="hover:bg-red-400/15 text-red-400"
                   >
                     Limpar Filtros
                     <Trash2 className="text-red-400 ml-auto" size={16} />

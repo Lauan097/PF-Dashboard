@@ -5,28 +5,30 @@ import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  LayoutDashboard,
   FileText,
-  Shield,
   Star,
   Clock,
   Activity,
   ChevronLeft,
-  ShieldAlert,
   Ban,
+  Rocket,
+  TriangleAlert,
+  House
 } from "lucide-react";
-import { Skeleton } from "@/components/skeleton";
-import { Tabs, TabsList, TabsTrigger } from "@/components/tabs";
-import { Button } from "@/components/button";
-import { toast } from "sonner";
+import { Tabs, Button, ButtonGroup, Separator, Skeleton } from "@heroui/react";
 import OverviewTab from "./components/OverviewTab";
 import RecordTab from "./components/RecordTab";
+import ServicesTab from "./components/ServicesTab";
+import DiscordStatusIcon from "@/app/components/DiscordStatusIcon";
+import ModalUp from "./components/ModalUp";
+import ModalWarningBan from "./components/ModalWarningBan";
 
-type TabId = "overview" | "record";
+type TabId = "overview" | "record" | "services";
 
 const TABS = [
-  { id: "overview" as TabId, label: "Visão Geral", icon: LayoutDashboard },
+  { id: "overview" as TabId, label: "Início", icon: House },
   { id: "record" as TabId, label: "Ficha", icon: FileText },
+  { id: "services" as TabId, label: "Serviços", icon: Clock },
 ];
 
 interface HeaderInfo {
@@ -46,19 +48,6 @@ interface MemberBasic {
   activity: string | null;
 }
 
-function getStatusColor(status: string) {
-  switch (status) {
-    case "online":
-      return "bg-emerald-500";
-    case "idle":
-      return "bg-yellow-500";
-    case "dnd":
-      return "bg-red-500";
-    default:
-      return "bg-gray-500";
-  }
-}
-
 export default function UserProfilePage() {
   const params = useParams();
   const router = useRouter();
@@ -66,6 +55,9 @@ export default function UserProfilePage() {
   const userId = params.userId as string;
 
   const [activeTab, setActiveTab] = useState<TabId>("overview");
+  const [modalUpOpen, setModalUpOpen] = useState(false);
+  const [modalBanOpen, setModalBanOpen] = useState(false);
+  const [modalWarningOpen, setModalWarningOpen] = useState(false);
   const [member, setMember] = useState<MemberBasic | null>(null);
   const [headerInfo, setHeaderInfo] = useState<HeaderInfo | null>(null);
   const [loading, setLoading] = useState(true);
@@ -115,24 +107,27 @@ export default function UserProfilePage() {
     >
       <div className="bg-[#0e0e0e] border border-white/8 rounded-2xl overflow-hidden print:hidden">
         <div className="flex items-center gap-4 px-6 py-4 border-b border-white/5">
-          <button
+          <Button
             onClick={() => router.push(`/${guildId}/members`)}
-            className="cursor-pointer shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-zinc-500 hover:text-zinc-200 hover:bg-white/8 transition-colors"
+            isIconOnly
+            variant="tertiary"
           >
             <ChevronLeft size={16} />
-          </button>
+          </Button>
+
+          <Separator orientation="vertical" className="bg-white/5" />
 
           {loading ? (
             <div className="flex items-center gap-3 flex-1">
-              <Skeleton className="w-11 h-11 rounded-full bg-zinc-800 shrink-0" />
+              <Skeleton className="w-11 h-11 rounded-full shrink-0" />
               <div className="flex flex-col gap-2">
-                <Skeleton className="h-4 w-32 bg-zinc-800" />
-                <Skeleton className="h-3 w-20 bg-zinc-800" />
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-3 w-20" />
               </div>
             </div>
           ) : (
             <>
-              <div className="relative shrink-0">
+              <div className="relative shrink-0 select-none">
                 <Image
                   src={
                     member?.avatar ||
@@ -150,8 +145,10 @@ export default function UserProfilePage() {
                   priority
                 />
                 <div
-                  className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-[#0e0e0e] ${getStatusColor(member?.status || "")}`}
-                />
+                  className="absolute bottom-0 right-0"
+                >
+                  <DiscordStatusIcon name={member?.status || "offline"} size={14} />
+                </div>
               </div>
 
               <div className="flex-1 min-w-0">
@@ -159,11 +156,6 @@ export default function UserProfilePage() {
                   <p className="text-white font-semibold text-sm truncate">
                     {member?.nickname || member?.username}
                   </p>
-                  {headerInfo?.rank && (
-                    <span className="bg-blue-500/15 text-blue-400 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-blue-500/20 flex items-center gap-1 shrink-0">
-                      <Shield size={10} /> {headerInfo.rank}
-                    </span>
-                  )}
                 </div>
                 <div className="text-zinc-500 text-xs mt-0.5">
                   @{member?.username}
@@ -171,9 +163,9 @@ export default function UserProfilePage() {
                 </div>
               </div>
 
-              <div className="hidden md:flex items-center gap-4 border p-2 rounded-lg border-white/10">
+              <div className="hidden md:flex items-center gap-4 p-2 rounded-full bg-[#262727]">
                 <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-                  <Clock size={12} className="text-blue-400" />
+                  <Clock size={14} className="text-blue-400" />
                   <span className="text-zinc-200 font-medium">
                     {headerInfo?.monthlyHours ?? 0}h
                   </span>
@@ -181,7 +173,7 @@ export default function UserProfilePage() {
                 </div>
                 <div className="w-px h-4 bg-white/10" />
                 <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-                  <Star size={12} className="text-yellow-400" />
+                  <Star size={14} className="text-yellow-400" />
                   <span className="text-zinc-200 font-medium">
                     {headerInfo?.level != null
                       ? `Nível ${headerInfo.level}`
@@ -190,7 +182,7 @@ export default function UserProfilePage() {
                 </div>
                 <div className="w-px h-4 bg-white/10" />
                 <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-                  <Activity size={12} className="text-emerald-400" />
+                  <Activity size={14} className="text-emerald-400" />
                   <span
                     className={
                       member?.activity
@@ -208,47 +200,69 @@ export default function UserProfilePage() {
 
         <div className="px-6 py-2.5 flex items-center justify-between">
           <Tabs
-            value={activeTab}
-            onValueChange={(v) => setActiveTab(v as TabId)}
+            selectedKey={activeTab}
+            onSelectionChange={(v) => setActiveTab(v as TabId)}
+            className="w-full max-w-xs"
           >
-            <TabsList>
-              {TABS.map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <TabsTrigger
-                    key={tab.id}
-                    value={tab.id}
-                    className="flex items-center gap-1.5 px-3 py-1.5 h-auto rounded-lg text-xs font-medium text-zinc-500 data-[state=active]:bg-white/8 data-[state=active]:text-white! data-[state=active]:border data-[state=active]:border-white/10 after:hidden"
-                  >
-                    <Icon size={13} />
-                    {tab.label}
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
+            <Tabs.ListContainer>
+              <Tabs.List aria-label="Abas do membro">
+                {TABS.map((tab) => {
+                  const Icon = tab.icon;
+                  return (
+                    <Tabs.Tab
+                      key={tab.id}
+                      id={tab.id}
+                      className="gap-2"
+                    >
+                      <Icon size={13} />
+                      {tab.label}
+                      <Tabs.Indicator />
+                    </Tabs.Tab>
+                  );
+                })}
+              </Tabs.List>
+            </Tabs.ListContainer>
           </Tabs>
-          <div className="gap-1 flex">
-            <Button
-              variant="destructive"
-              size="icon"
-              onClick={() =>
-                toast.info("Funcionalidade disponível em breve...")
-              }
-            >
-              <Ban />
-            </Button>
-            <Button
-              variant="secondary"
-              size="icon"
-              onClick={() =>
-                toast.info("Funcionalidade disponível em breve...")
-              }
-            >
-              <ShieldAlert />
-            </Button>
+          <div>
+            <ButtonGroup size="md" variant="secondary">
+              <Button onClick={() => setModalBanOpen(true)}>
+                <Ban className="text-red-400" />
+              </Button>
+              <Button onClick={() => setModalWarningOpen(true)}>
+                <ButtonGroup.Separator />
+                <TriangleAlert className="text-yellow-400" />
+              </Button>
+              <Button
+                onClick={() => setModalUpOpen(true)}
+              >
+                <ButtonGroup.Separator />
+                <Rocket className="text-emerald-400" />
+              </Button>
+            </ButtonGroup>
           </div>
         </div>
       </div>
+
+      <ModalWarningBan
+        type="ban"
+        isOpen={modalBanOpen}
+        onClose={() => setModalBanOpen(false)}
+        guildId={guildId}
+        userId={userId}
+      />
+      <ModalWarningBan
+        type="warning"
+        isOpen={modalWarningOpen}
+        onClose={() => setModalWarningOpen(false)}
+        guildId={guildId}
+        userId={userId}
+      />
+      <ModalUp
+        isOpen={modalUpOpen}
+        onClose={() => setModalUpOpen(false)}
+        guildId={guildId}
+        userId={userId}
+      />
 
       <div className="overflow-hidden mt-12 print:mt-0">
         <AnimatePresence mode="wait" initial={false}>
@@ -268,6 +282,8 @@ export default function UserProfilePage() {
           >
             {activeTab === "overview" ? (
               <OverviewTab userId={userId} guildId={guildId} />
+            ) : activeTab === "services" ? (
+              <ServicesTab userId={userId} guildId={guildId} />
             ) : (
               <RecordTab userId={userId} guildId={guildId} />
             )}

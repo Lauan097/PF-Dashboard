@@ -76,7 +76,8 @@ export type MemberRecordResult =
 // -------- OVERVIEW --------
 export interface TimeCard {
   name: string;
-  horas: number;
+  value: number;
+  suffix: string;
 }
 
 export interface WeeklyActivity {
@@ -89,16 +90,31 @@ export interface MonthlyActivity {
   horas: number;
 }
 
-export interface ActiveShift {
-  name: string;
-  value: number;
-  color: string;
+export type WeeklyGoalStatus =
+  | "no_goal"
+  | "not_started"
+  | "in_progress"
+  | "completed";
+
+export interface WeeklyGoalData {
+  goalHours: number;
+  currentWeekHours: number;
+  sessionsThisWeek: number;
+  status: WeeklyGoalStatus;
+  goalMetAt: string | null;
+  goalMetDay: string | null;
+  isRecord: boolean;
+  bestWeekHours: number;
+  progressPercent: number;
 }
 
 export interface ConductEntry {
   id: string;
   title: string;
-  date: string; // ISO string
+  description?: string;
+  oldRole?: string | null;
+  newRole?: string | null;
+  date: string;
   type: "praise" | "warning" | "neutral";
 }
 
@@ -113,7 +129,7 @@ export interface MemberOverview {
   timeCards: TimeCard[];
   weeklyActivity: WeeklyActivity[];
   monthlyActivity: MonthlyActivity[];
-  activeDaysData: ActiveShift[];
+  weeklyGoal: WeeklyGoalData;
   conductHistory: ConductEntry[];
   topPartners: TopPartner[];
 }

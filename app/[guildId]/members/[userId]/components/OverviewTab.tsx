@@ -8,11 +8,17 @@ import {
   Users,
   BarChart3,
   CircleAlert,
+  Rocket,
+  Target,
+  TriangleAlert,
+  Plus,
+  Minus,
+  History
 } from "lucide-react";
 import { FaCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { MemberOverview } from "@/types/user";
-import { Skeleton } from "@/components/skeleton";
+import { ScrollShadow, Skeleton, Accordion } from "@heroui/react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -20,12 +26,13 @@ import {
   BarElement,
   LineElement,
   PointElement,
-  ArcElement,
   Tooltip,
   Filler,
   type ChartOptions,
 } from "chart.js";
-import { Line, Bar, Doughnut } from "react-chartjs-2";
+import { Line, Bar } from "react-chartjs-2";
+import { DiscordIcon } from "@/app/components/DiscordIcons";
+import WeeklyGoalCard from "./WeeklyGoalCard";
 
 ChartJS.register(
   CategoryScale,
@@ -33,7 +40,6 @@ ChartJS.register(
   BarElement,
   LineElement,
   PointElement,
-  ArcElement,
   Tooltip,
   Filler,
 );
@@ -56,10 +62,10 @@ function OverviewSkeleton() {
         {[0, 1, 2].map((i) => (
           <div
             key={i}
-            className="bg-[#1a1a1a] border border-white/5 p-5 rounded-2xl flex flex-col gap-3"
+            className="bg-[#1a1a1a] border border-white/5 p-5 rounded-2xl flex flex-col gap-3 h-105"
           >
             <Skeleton className="h-3.5 w-36 bg-zinc-800" />
-            {[0, 1, 2].map((j) => (
+            {[0, 1, 2, 3, 4, 5].map((j) => (
               <Skeleton key={j} className="h-9 w-full rounded-xl bg-zinc-800" />
             ))}
           </div>
@@ -122,7 +128,7 @@ export default function OverviewTab({ userId, guildId }: OverviewTabProps) {
               setOverview(data.data);
               setLoading(false);
             }
-          }, 800);
+          }, 400);
         } else {
           setError(data.error || "Erro ao carregar visão geral.");
           setLoading(false);
@@ -160,7 +166,7 @@ export default function OverviewTab({ userId, guildId }: OverviewTabProps) {
           <p className="text-sm font-medium text-white">
             Nenhum dado disponível
           </p>
-          <p className="text-xs text-zinc-500 max-w-[280px] mt-1">
+          <p className="text-xs text-zinc-500 max-w-70 mt-1">
             {error || "Este usuário não possui registros ou permissão para visualização."}
           </p>
         </div>  
@@ -172,7 +178,7 @@ export default function OverviewTab({ userId, guildId }: OverviewTabProps) {
     timeCards,
     weeklyActivity,
     monthlyActivity,
-    activeDaysData,
+    weeklyGoal,
     conductHistory,
     topPartners,
   } = overview;
@@ -270,36 +276,10 @@ export default function OverviewTab({ userId, guildId }: OverviewTabProps) {
     },
   };
 
-  const doughnutChartData = {
-    labels: activeDaysData.map((d) => d.name),
-    datasets: [
-      {
-        data: activeDaysData.map((d) => d.value),
-        backgroundColor: activeDaysData.map((d) => d.color),
-        borderColor: "#1a1a1a",
-        borderWidth: 3,
-        hoverOffset: 6,
-      },
-    ],
-  };
-
-  const doughnutChartOptions: ChartOptions<"doughnut"> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    cutout: "62%",
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        ...sharedTooltip,
-        callbacks: { label: (ctx) => ` ${ctx.parsed}%` },
-      },
-    },
-  };
-
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-[#1a1a1a] border border-white/5 p-5 rounded-2xl flex flex-col gap-3">
+        <div className="bg-[#1a1a1a] border border-white/5 p-5 rounded-2xl flex flex-col gap-3 h-100">
           <span className="text-zinc-400 text-xs font-semibold flex items-center gap-2 pb-2 border-b border-white/5">
             <Clock size={14} className="text-blue-500" /> Tempo em Serviço
           </span>
@@ -313,69 +293,78 @@ export default function OverviewTab({ userId, guildId }: OverviewTabProps) {
                 {t.name}
               </span>
               <span className="text-blue-400 font-semibold text-sm">
-                {t.horas}h
+                {t.value}{t.suffix === "h" ? "h" : ` ${t.suffix}`}
               </span>
             </div>
           ))}
         </div>
 
-        <div className="bg-[#1a1a1a] border border-white/5 p-5 rounded-2xl flex flex-col gap-3">
+        <div className="bg-[#1a1a1a] border border-white/5 p-4 rounded-2xl flex flex-col gap-3 h-100">
           <span className="text-zinc-400 text-xs font-semibold flex items-center gap-2 pb-2 border-b border-white/5">
             <ShieldAlert size={14} className="text-indigo-500" /> Histórico de
             Conduta
           </span>
-          {conductHistory.length === 0 ? (
-            <EmptyState message="Nenhum registro de conduta encontrado." />
-          ) : (
-            conductHistory.map((r) => (
-              <div
-                key={r.id}
-                className="flex items-center justify-between bg-[#222] p-2.5 rounded-xl border border-white/5"
-              >
-                <span className="text-zinc-300 text-xs font-medium flex items-center gap-2">
-                  <FaCircle
-                    size={10}
-                    className={
-                      r.type === "warning"
-                        ? "text-yellow-500"
-                        : r.type === "praise"
-                          ? "text-green-500"
-                          : "text-blue-400"
-                    }
-                  />
-                  {r.title}
-                </span>
-                <span className="text-zinc-500 text-xs">{fmtDate(r.date)}</span>
+          <ScrollShadow className="space-y-2 [scrollbar-width:none] flex-1 overflow-y-auto">
+            {conductHistory.length === 0 ? (
+              <div className="flex flex-col flex-1 gap-3 h-full">
+                <div className="flex flex-col items-center justify-center flex-1 text-center gap-3 py-4 bg-zinc-900/30 rounded-xl border border-white/5">
+                  <History className="text-zinc-700 w-8 h-8" />
+                  <p className="text-zinc-400 text-sm font-medium">Sem histórico de conduta</p>
+                  <p className="text-zinc-600 text-xs max-w-48">
+                    Nenhuma advertência, elogio ou mudança de cargo registrada para este usuário.
+                  </p>
+                </div>
               </div>
-            ))
-          )}
+            ) : (
+              <Accordion variant="surface">
+                {conductHistory.map((r) => (
+                  <Accordion.Item key={r.id}>
+                    <Accordion.Heading>
+                      <Accordion.Trigger className="gap-2">
+                        {r.type === "praise" ? (
+                          <Rocket className="text-green-400" size={16} />
+                        ) : r.type === "warning" ? (
+                          <TriangleAlert className="text-yellow-500" size={16} />
+                        ) : (
+                          <FaCircle className="text-blue-400" size={16} />
+                        )}
+                        {r.title} <p className="text-zinc-400 text-[9px]">{fmtDate(r.date)}</p>
+                        <Accordion.Indicator />
+                      </Accordion.Trigger>
+                    </Accordion.Heading>
+                    <Accordion.Panel>
+                      <Accordion.Body className="p-4">
+                        {r.description && 
+                          <p>{r.description}</p>
+                        }
+                        {r.oldRole && r.newRole && (
+                          <div className="text-sm space-y-2">
+                            <p className="p-2 bg-emerald-500/10 text-emerald-400 rounded-xl flex items-center gap-2">
+                              <DiscordIcon name="roles" className="w-4 h-4" />
+                              {r.newRole || "Desconhecido"}
+                              <Plus className="ml-auto" />
+                            </p>
+                            <p className="p-2 bg-red-500/10 text-red-400 rounded-xl flex items-center gap-2">
+                              <DiscordIcon name="roles" className="w-4 h-4" />
+                              {r.oldRole || "Desconhecido"}
+                              <Minus className="ml-auto" />
+                            </p>
+                          </div>
+                        )}
+                      </Accordion.Body>
+                    </Accordion.Panel>
+                  </Accordion.Item>
+                ))}
+              </Accordion>
+            )}
+          </ScrollShadow>
         </div>
 
-        <div className="bg-[#1a1a1a] border border-white/5 p-5 rounded-2xl flex flex-col gap-3">
+        <div className="bg-[#1a1a1a] border border-white/5 p-5 rounded-2xl flex flex-col gap-3 h-100">
           <span className="text-zinc-400 text-xs font-semibold flex items-center gap-2 pb-2 border-b border-white/5">
-            <CalendarDays size={14} className="text-purple-500" /> Turnos Mais
-            Ativos
+            <Target size={14} className="text-purple-500" /> Meta Semanal
           </span>
-          <div className="h-36 w-full mt-1">
-            <Doughnut data={doughnutChartData} options={doughnutChartOptions} />
-          </div>
-          <div className="flex flex-col gap-1.5 mt-1">
-            {activeDaysData.map((d, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-2 text-xs text-zinc-400"
-              >
-                <span
-                  className="w-2.5 h-2.5 rounded-full shrink-0"
-                  style={{ backgroundColor: d.color }}
-                />
-                {d.name}
-                <span className="ml-auto text-zinc-300 font-medium">
-                  {d.value}%
-                </span>
-              </div>
-            ))}
-          </div>
+          <WeeklyGoalCard data={weeklyGoal} />
         </div>
       </div>
 
@@ -392,7 +381,7 @@ export default function OverviewTab({ userId, guildId }: OverviewTabProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-[#1a1a1a] border border-white/5 p-5 rounded-2xl flex flex-col gap-3">
           <span className="text-zinc-400 text-xs font-semibold flex items-center gap-2 pb-2 border-b border-white/5">
-            <Users size={14} className="text-emerald-500" /> Parceiros
+            <Users size={14} className="text-emerald-500 border-[#d8bd24]" /> Parceiros
             Frequentes
           </span>
           {topPartners.length === 0 ? (

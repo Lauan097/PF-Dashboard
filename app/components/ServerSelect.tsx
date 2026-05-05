@@ -38,7 +38,7 @@ export function ServerSelect({
   return (
     <Popover isOpen={popoverOpen} onOpenChange={setPopoverOpen}>
       <Popover.Trigger>
-        <div className={`flex items-center ${mode === 0 ? 'w-60 bg-white/3' : ''} p-1.5 space-x-3 rounded-md transition-colors cursor-pointer overflow-hidden ${popoverOpen ? 'bg-white/8' : 'hover:bg-white/8'}`}>
+        <div className={`flex items-center ${mode === 0 ? 'w-60 bg-white/3' : ''} p-1.5 space-x-3 rounded-full transition-colors cursor-pointer overflow-hidden ${popoverOpen ? 'bg-white/8' : 'hover:bg-white/8'}`}>
           <div className="h-9 w-9 min-w-9 shrink-0">
             <Image
               src={selectServer.icon ?? "https://cdn.discordapp.com/embed/avatars/0.png"}
@@ -69,7 +69,7 @@ export function ServerSelect({
         </div>
       </Popover.Trigger>
       
-      <Popover.Content className="w-60 rounded-md" placement="right">
+      <Popover.Content className="w-60" placement="right">
         <div className="p-2 w-full">
           <div className="text-xs text-gray-400 px-2 mb-2">Servidores</div>
           {servers.map((server) => (
@@ -82,7 +82,7 @@ export function ServerSelect({
                 segments[1] = server.id;
                 router.push(segments.join("/") || `/${server.id}`);
               }}
-              className={`flex items-center space-x-2 p-2 ${server.id === value ? "bg-white/10" : "hover:bg-white/5"} rounded-md cursor-pointer`}
+              className={`flex items-center space-x-2 p-2 ${server.id === value ? "bg-white/10" : "hover:bg-white/5"} rounded-full cursor-pointer`}
             >
               <Image
                 src={server.icon ?? "https://cdn.discordapp.com/embed/avatars/0.png"}
@@ -105,7 +105,7 @@ export function ServerSelect({
               setPopoverOpen(false);
               toast.warning('Ops! Você não tem permissão pra isso.');
             }} 
-            className="flex items-center hover:bg-neutral-800 rounded-md cursor-pointer p-2 space-x-2 w-full"
+            className="flex items-center hover:bg-neutral-800 cursor-pointer p-2 space-x-2 w-full rounded-full"
           >
             <div className="bg-neutral-800 p-1.5 w-fit rounded-full">
               <Plus size={14} />

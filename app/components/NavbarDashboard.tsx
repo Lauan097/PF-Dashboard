@@ -179,7 +179,7 @@ export default function SidebarDashboard() {
                   if (isMobile) setIsMobileOpen(false);
                 }}
                 className={cn(
-                  `flex items-center justify-start rounded-md overflow-hidden hover:bg-white/5 w-full gap-3 cursor-pointer h-10 px-3.5`,
+                  `flex items-center justify-start overflow-hidden hover:bg-white/5 w-full gap-3 cursor-pointer h-10 px-3.5`,
                   `${pathname === item.path ? "bg-white/5" : ""}`,
                 )}
                 disabled={item.disabled}
@@ -192,7 +192,7 @@ export default function SidebarDashboard() {
           <Dropdown isOpen={open} onOpenChange={setOpen}>
             <Dropdown.Trigger
               className={cn(
-                `flex items-center h-12 px-2 py-2 space-x-3 rounded-md transition-colors overflow-hidden`,
+                `flex items-center h-12 px-2 py-2 space-x-3 rounded-full transition-colors overflow-hidden`,
                 isCollapsed
                   ? "hover:bg-white/5 w-fit"
                   : "min-w-60 bg-white/3 hover:bg-white/5",
@@ -234,7 +234,6 @@ export default function SidebarDashboard() {
 
             <Dropdown.Popover
               placement={isCollapsed ? "top start" : "top"}
-              className="rounded-md"
             >
               <div className="flex items-center space-x-2 select-none px-3 py-2 border-b border-white/5">
                 <Image
@@ -262,7 +261,6 @@ export default function SidebarDashboard() {
                   id="plan"
                   onPress={() => router.push(`/${guildId}/plan`)}
                   isDisabled
-                  className="rounded-md"
                 >
                   <CreditCard className="h-4 w-4" />
                   Assinatura
@@ -270,7 +268,6 @@ export default function SidebarDashboard() {
                 <Dropdown.Item
                   id="settings"
                   onPress={() => toast.info("Disponível em breve!")}
-                  className="rounded-md"
                 >
                   <Settings className="h-4 w-4" />
                   Configurações
@@ -281,7 +278,7 @@ export default function SidebarDashboard() {
                   onPress={() => {
                     window.location.href = "https://pflegacy.xyz";
                   }}
-                  className="hover:bg-red-600/10 text-red-400 hover:text-red-400 rounded-md"
+                  className="hover:bg-red-600/10 text-red-400 hover:text-red-400"
                 >
                   <LogOut className="h-4 w-4" />
                   Sair do Dashboard

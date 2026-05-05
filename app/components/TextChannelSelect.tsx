@@ -8,7 +8,7 @@ import { normalizeText } from "@/utils/textUtils";
 interface Channels {
   id: string;
   name: string;
-  color?: number;
+  color?: number | string;
   position?: number;
 }
 
@@ -34,8 +34,9 @@ export function TextChannelSelect({
   type = "text",
   disabled = false,
 }: TextChannelSelectProps) {
-  const getRoleColor = (color: number | undefined) => {
+  const getRoleColor = (color: number | string | undefined) => {
     if (!color || color === 0) return undefined;
+    if (typeof color === "string") return color;
     return `#${color.toString(16).padStart(6, "0")}`;
   };
 

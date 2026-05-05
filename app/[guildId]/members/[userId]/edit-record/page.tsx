@@ -3,10 +3,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { Button } from "@/components/button";
+import { Button, ButtonGroup, Spinner, Separator, Skeleton } from "@heroui/react";
 import { Input } from "@/components/input";
 import { Textarea } from "@/components/textarea";
-import { Spinner } from "@/components/spinner";
 import { CircleAlert, ChevronLeft, Plus, X, Save } from "lucide-react";
 import type { MemberRecord, MemberStatus } from "@/types/user";
 import { toast } from "sonner";
@@ -293,9 +292,16 @@ export default function EditRecordPage() {
 
   if (loading) {
     return (
-      <div className="text-zinc-500 text-sm py-12 text-center flex items-center justify-center h-screen gap-2">
-        <Spinner className="text-zinc-600 size-6" />
-        Carregando ficha...
+      <div className="container mx-auto space-y-6 pt-6 px-12 py-12 bg-[#171717] rounded-2xl">
+        <div className="flex flex-col sm:flex-row print:hidden mx-auto max-w-5xl border-b h-20 border-zinc-700 mb-6 gap-6">
+          <h1 className="flex items-center text-lg font-bold tracking-wide text-zinc-300 gap-2">
+            <Skeleton className="h-7 w-82 bg-zinc-800 rounded-3xl" />
+          </h1>
+          <div className="sm:ml-auto space-x-2 pt-4 sm:pt-0 items-center flex">
+            <Skeleton className="h-7 w-48 bg-zinc-800 rounded-3xl" />
+          </div>
+        </div>
+        <Skeleton className="h-lvh w-5xl mx-auto bg-zinc-800" />
       </div>
     );
   }
@@ -310,30 +316,38 @@ export default function EditRecordPage() {
   }
 
   return (
-    <div className="container mx-auto space-y-6 pt-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-[#171717] border border-zinc-800 px-4 py-4 rounded-2xl">
-        <Button
-          variant="ghost"
-          onClick={() => router.push(`/${guildId}/members/${userId}`)}
-          className="flex items-center text-zinc-500 hover:text-zinc-200"
-        >
-          <ChevronLeft size={15} /> Voltar
-        </Button>
-        <h1 className="text-lg font-bold tracking-wide text-zinc-300 sm:ml-2">
-          Editar Ficha de Registro
-        </h1>
-        <div className="sm:ml-auto flex gap-2">
+    <div className="container mx-auto space-y-6 pt-6 px-12 py-12 bg-[#171717] rounded-2xl">
+      <div className="flex flex-col sm:flex-row print:hidden mx-auto max-w-5xl border-b h-20 border-zinc-700 mb-6 gap-6">
+        <div className="flex items-center gap-2">
           <Button
-            variant="secondary"
+            variant="tertiary"
             onClick={() => router.push(`/${guildId}/members/${userId}`)}
-            disabled={saving}
           >
-            Cancelar
+            <ChevronLeft size={15} /> Voltar
           </Button>
-          <Button onClick={handleSave} disabled={saving}>
-            {saving ? <Spinner className="size-4" /> : <Save size={14} />}
-            Salvar
-          </Button>
+          <h1 className="text-lg font-bold tracking-wide text-zinc-300 sm:ml-2">
+            Editar Ficha de Registro
+          </h1>
+        </div>
+        <div className="sm:ml-auto flex gap-2">
+          <ButtonGroup size="sm" variant="secondary">
+            <Button
+              onClick={() => router.push(`/${guildId}/members/${userId}`)}
+              isDisabled={saving}
+              variant="danger"
+            >
+              <X />
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSave}
+              isDisabled={saving}
+              className="text-black bg-white hover:bg-white/90"
+            >
+              {saving ? <Spinner color="current" className="size-4" /> : <Save size={14} />}
+              Confirmar
+            </Button>
+          </ButtonGroup>
         </div>
       </div>
 

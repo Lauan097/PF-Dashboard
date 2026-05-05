@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, ButtonProps, PressEvent } from "@heroui/react";
-import { Tooltip } from "@heroui/react";
+import { Tooltip, Kbd } from "@heroui/react";
 import { cn } from "@/lib/utils";
 import { ReactNode, useState } from "react";
 
@@ -60,7 +60,7 @@ export function TooltipButton({
           isIconOnly={IconOnly}
           size={size}
           variant={variant}
-          className={cn(buttonClassName, "rounded-md min-w-0")}
+          className={cn(buttonClassName, "min-w-0")}
           onPress={handleClick}
           isDisabled={disabled}
           onMouseEnter={() => setIsTooltipOpen(true)}
@@ -84,7 +84,7 @@ export function TooltipButton({
           {kdbText && (
             <div>
               {kdbContent ? kdbContent : ""}
-              <kbd className="bg-[#3d3d3d] text-gray-300">{kdbText}</kbd>
+              <Kbd>{kdbText}</Kbd>
             </div>
           )}
         </Tooltip.Content>

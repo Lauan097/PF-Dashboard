@@ -4,6 +4,7 @@ import { Activity, Calendar1, ChevronRight, User2 } from "lucide-react";
 import { Pagination } from "@heroui/react";
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import DiscordStatusIcon from "@/app/components/DiscordStatusIcon";
 
 interface DiscordMember {
   id: string;
@@ -33,7 +34,7 @@ export default function MemberTable({
   onRowClick,
 }: MemberTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 15;
+  const itemsPerPage = 30;
 
   const totalPages = Math.ceil(members.length / itemsPerPage) || 1;
   const safeCurrentPage = Math.min(currentPage, totalPages);
@@ -124,7 +125,7 @@ export default function MemberTable({
               variants={variants}
             >
               {loading
-                ? Array.from({ length: 10 }).map((_, i) => (
+                ? Array.from({ length: 20 }).map((_, i) => (
                     <tr key={i} className="border-b border-white/5">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-4">
@@ -172,8 +173,10 @@ export default function MemberTable({
                               priority
                             />
                             <div
-                              className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-[#3d3d3d] ${getStatusColor(member.status)}`}
-                            />
+                              className="absolute bottom-0 right-0"
+                            >
+                              <DiscordStatusIcon name={member?.status || "offline"} size={14} />
+                            </div>
                           </div>
                           <div>
                             <div className="text-white font-medium">
