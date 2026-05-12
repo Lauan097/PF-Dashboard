@@ -297,26 +297,11 @@ export default function RecordTab({ userId, guildId }: RecordTabProps) {
                   Antecedentes:
                 </span>
                 <div className="flex items-center gap-4">
-                  <label className="flex items-center gap-1 text-sm text-zinc-800">
-                    <div
-                      className={`w-4 h-4 border border-zinc-500 flex items-center justify-center ${member.backgrounds ? "bg-zinc-300" : ""}`}
-                    >
-                      {member.backgrounds === true && (
-                        <span className="text-[10px] text-black">X</span>
-                      )}
-                    </div>
-                    Sim
-                  </label>
-                  <label className="flex items-center gap-1 text-sm text-zinc-800">
-                    <div
-                      className={`w-4 h-4 border border-zinc-500 flex items-center justify-center ${!member.backgrounds ? "bg-zinc-300" : ""}`}
-                    >
-                      {!member.backgrounds && (
-                        <span className="text-[10px] text-black">X</span>
-                      )}
-                    </div>
-                    Não
-                  </label>
+                  <FormField
+                    label="Antecedentes"
+                    value={member.antecedents ?? "N/A"}
+                    className="w-full sm:w-1/3"
+                  />
                 </div>
               </div>
             </div>

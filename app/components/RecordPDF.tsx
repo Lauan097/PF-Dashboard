@@ -351,14 +351,11 @@ export function RecordPDF({
               />
               <View style={[s.fieldRow, { flex: 1 }]}>
                 <Text style={s.checkLabel}>Antecedentes:</Text>
-                <View style={s.checkRow}>
-                  <CheckToggle checked={member.backgrounds === true} />
-                  <Text style={s.checkOptionLabel}> Sim</Text>
-                </View>
-                <View style={[s.checkRow, { marginLeft: 6 }]}>
-                  <CheckToggle checked={!member.backgrounds} />
-                  <Text style={s.checkOptionLabel}> Não</Text>
-                </View>
+                <Field
+                  label="Tipo Sanguíneo"
+                  value={member.antecedents ?? "N/A"}
+                  style={{ flex: 1 }}
+                />
               </View>
             </View>
           </View>

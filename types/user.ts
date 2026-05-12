@@ -29,7 +29,7 @@ export interface MemberRecord {
   phone: string | null;
   photoUrl: string | null;
   level: number | null;
-  backgrounds: boolean | null;
+  antecedents: string | null;
   gender: string | null;
   bloodType: string | null;
   maritalStatus: string | null;

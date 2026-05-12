@@ -72,7 +72,6 @@ export const ImageBlock = ({ block, onUpdate, onRemove, parentId }: BlockProps) 
       variant: 'danger',
     });
     return acts;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [images.length, block.id, onRemove, parentId]);
 
   const GalleryItem = ({ img, className }: { img: ImageGalleryItem; className?: string }) => (

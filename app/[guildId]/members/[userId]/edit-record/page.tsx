@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { Button, ButtonGroup, Spinner, Separator, Skeleton } from "@heroui/react";
+import { Button, ButtonGroup, Spinner, Skeleton } from "@heroui/react";
 import { Input } from "@/components/input";
 import { Textarea } from "@/components/textarea";
 import { CircleAlert, ChevronLeft, Plus, X, Save } from "lucide-react";
@@ -120,7 +120,7 @@ type FormState = {
   gender: string;
   bloodType: string;
   maritalStatus: string;
-  backgrounds: boolean;
+  antecedents: string;
   signature: string;
 
   // Institucional
@@ -161,7 +161,7 @@ function buildFormState(m: MemberRecord): FormState {
     gender: m.gender ?? "",
     bloodType: m.bloodType ?? "",
     maritalStatus: m.maritalStatus ?? "",
-    backgrounds: m.backgrounds ?? false,
+    antecedents: m.antecedents ?? "",
     signature: m.signature ?? "",
     internalId: m.internalId ?? "",
     registration: m.registration ?? "",
@@ -506,28 +506,13 @@ export default function EditRecordPage() {
                 Possui Antecedentes?
               </span>
               <div className="flex items-center gap-4">
-                <label className="flex items-center gap-1 text-sm text-zinc-800 cursor-pointer">
-                  <div
-                    onClick={() => set("backgrounds", true)}
-                    className={`w-4 h-4 border border-zinc-500 flex items-center justify-center cursor-pointer ${form.backgrounds ? "bg-zinc-400" : ""}`}
-                  >
-                    {form.backgrounds && (
-                      <span className="text-[10px] text-black">X</span>
-                    )}
-                  </div>
-                  Sim
-                </label>
-                <label className="flex items-center gap-1 text-sm text-zinc-800 cursor-pointer">
-                  <div
-                    onClick={() => set("backgrounds", false)}
-                    className={`w-4 h-4 border border-zinc-500 flex items-center justify-center cursor-pointer ${!form.backgrounds ? "bg-zinc-400" : ""}`}
-                  >
-                    {!form.backgrounds && (
-                      <span className="text-[10px] text-black">X</span>
-                    )}
-                  </div>
-                  Não
-                </label>
+                <Input
+                  type="text"
+                  value={form.antecedents}
+                  onChange={(e) => set("antecedents", e.target.value)}
+                  className={inputClass}
+                  placeholder="—"
+                />
               </div>
             </div>
           </div>
