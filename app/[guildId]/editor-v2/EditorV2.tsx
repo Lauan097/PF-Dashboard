@@ -219,9 +219,9 @@ export default function DiscordV2Editor() {
       initial="hidden"
       animate="show"
       exit="exit" 
-      className="min-h-screen text-gray-100 font-sans flex overflow-hidden bg-[#313338] rounded-lg"
+      className="min-h-screen text-gray-100 font-sans flex bg-[#313338] rounded-lg"
     >
-      <div className="flex-1 sm:p-8 flex justify-center overflow-hidden">
+      <div className="flex-1 sm:p-8 flex justify-center overflow-y-auto">
         <div className="w-full max-w-4xl flex flex-col min-h-full">
           <div className="flex-1 overflow-y-auto mt-10 pr-2">
             <div className="flex items-start mb-2 select-none opacity-90 pl-4">
@@ -294,7 +294,7 @@ export default function DiscordV2Editor() {
         </div>
       </div>
 
-      <div className="w-16 bg-[#2B2D31] border-l border-[#1F2023] flex flex-col items-center py-6 gap-4 z-20 shadow-xl">
+      <div className="sticky top-0 h-screen w-16 bg-[#2B2D31] border-l border-[#1F2023] flex flex-col items-center py-6 gap-4 z-20 shadow-xl rounded-r-lg">
         <ModalToSend
           blocks={blocks}
           serverData={serverData}

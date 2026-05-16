@@ -438,7 +438,7 @@ export default function MentionInput({
         value={value}
         onChange={handleInput}
         onKeyDown={handleKeyDown}
-        className={`w-full bg-[#383a40] text-gray-100 placeholder-gray-400 p-3 rounded-md focus:outline-none resize-none wrap-break-word z-40 ${className}`}
+        className={`w-full bg-[#383a40] text-gray-100 placeholder-gray-400 p-3 rounded-md focus:outline-none resize-none wrap-break-word z-40 ${className} ${value === "" ? "border border-red-500" : ""}`}
         // className="overflow-y-auto scroll-hidden"
         // style={{ maxHeight: '300px' }}
         {...props}

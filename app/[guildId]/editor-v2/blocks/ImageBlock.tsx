@@ -108,7 +108,7 @@ export const ImageBlock = ({ block, onUpdate, onRemove, parentId }: BlockProps) 
       return (
         <button
           onClick={openAdd}
-          className="w-full h-32 border-2 border-dashed border-zinc-600 rounded-md flex flex-col items-center justify-center text-zinc-400 hover:text-zinc-200 hover:border-zinc-400 hover:bg-zinc-800/50 transition-all cursor-pointer"
+          className={`w-full h-32 border-2 border-dashed border-zinc-600 rounded-md flex flex-col items-center justify-center text-zinc-400 hover:text-zinc-200 hover:border-zinc-400 hover:bg-zinc-800/50 transition-all cursor-pointer ${images.length === 0 ? 'border-red-500!' : ''}`}
         >
           <ImageIcon size={24} className="mb-2" />
           <span className="text-sm font-medium">Adicionar Imagem</span>
