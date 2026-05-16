@@ -8,7 +8,6 @@ export function formatDate(iso: string | Date, includeYear = true): string {
 
   const day = String(date.getDate()).padStart(2, "0");
   const month = date.toLocaleDateString("pt-BR", { month: "short" });
-  // Remove o ponto final que algumas localidades adicionam ao mês
   const monthClean = month.replace(/\.$/, "");
 
   if (!includeYear) {

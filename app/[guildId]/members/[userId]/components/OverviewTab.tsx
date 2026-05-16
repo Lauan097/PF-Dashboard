@@ -15,12 +15,11 @@ import {
   Minus,
   History,
   TrendingUp,
-  Timer,
 } from "lucide-react";
 import { FaCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { MemberOverview } from "@/types/user";
-import { ScrollShadow, Skeleton, Accordion } from "@heroui/react";
+import { ScrollShadow, Skeleton, Accordion, Label, ListBox, Select } from "@heroui/react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -232,7 +231,7 @@ export default function OverviewTab({ userId, guildId }: OverviewTabProps) {
       tooltip: {
         ...sharedTooltip,
         callbacks: {
-          label: (ctx) => ` ${ctx.parsed.y}h de patrulha`,
+          label: (ctx) => ` ${formatTime((ctx.parsed.y ?? 0) * 3600)} de serviço`,
           title: (items) => items[0].label,
         },
       },
@@ -272,7 +271,7 @@ export default function OverviewTab({ userId, guildId }: OverviewTabProps) {
       tooltip: {
         ...sharedTooltip,
         callbacks: {
-          label: (ctx) => ` ${ctx.parsed.y}h de patrulha`,
+          label: (ctx) => ` ${formatTime((ctx.parsed.y ?? 0) * 3600)} de serviço`,
           title: (items) => items[0].label,
         },
       },
@@ -416,8 +415,27 @@ export default function OverviewTab({ userId, guildId }: OverviewTabProps) {
 
       <div className="bg-[#1a1a1a] rounded-2xl p-5 border border-white/5">
         <span className="text-zinc-400 text-xs font-semibold flex items-center gap-2 pb-3 border-b border-white/5 mb-4">
-          <Activity size={14} className="text-blue-500" /> Atividade Semanal de
-          Patrulhamento
+          <Activity size={14} className="text-blue-500" /> Atividade Semanal de Patrulhamento
+          <div className="ml-auto w-40">
+            <Select fullWidth placeholder="Selecione" aria-label="Select one">
+              <Select.Trigger>
+                <Select.Value />
+                <Select.Indicator />
+              </Select.Trigger>
+              <Select.Popover className="w-auto">
+                <ListBox>
+                  <ListBox.Item id="actual-week" textValue="Esta Semana">
+                    Esta Semana
+                    <ListBox.ItemIndicator />
+                  </ListBox.Item>
+                  <ListBox.Item id="previous-week" textValue="Semana Anterior">
+                    Semana Anterior
+                    <ListBox.ItemIndicator />
+                  </ListBox.Item>
+                </ListBox>
+              </Select.Popover>
+            </Select>
+          </div>
         </span>
         <div className="h-52 w-full">
           <Line data={weeklyChartData} options={weeklyChartOptions} />

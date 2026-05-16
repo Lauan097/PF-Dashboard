@@ -6,6 +6,7 @@ import { Button, Skeleton, Spinner, NumberField, Label, Description } from "@her
 import { toast } from "sonner";
 import WeeklyHistory, { type WeekHistoryItem } from "./WeeklyHistory";
 import SessionsTable from "./SessionsTable";
+import { formatTime } from "@/utils/timeFormat";
 
 interface ServicesTabProps {
   userId: string;
@@ -13,8 +14,8 @@ interface ServicesTabProps {
 }
 
 interface ServicesData {
-  weeklyGoal: number;         // segundos
-  weeklyGoalDiscount: number; // percentual 0-100
+  weeklyGoal: number;
+  weeklyGoalDiscount: number;
   weeklyHistory: WeekHistoryItem[];
 }
 
@@ -113,8 +114,8 @@ export default function ServicesTab({ userId, guildId }: ServicesTabProps) {
     }
   }
 
-  const effectiveGoalHours = data
-    ? Math.max(0, secondsToHours(data.weeklyGoal ?? 0) * (1 - (data.weeklyGoalDiscount ?? 0) / 100))
+    const effectiveGoalSeconds = data
+    ? Math.max(0, (data.weeklyGoal ?? 0) * (1 - (data.weeklyGoalDiscount ?? 0) / 100))
     : 0;
 
   if (loading) {
@@ -222,9 +223,9 @@ export default function ServicesTab({ userId, guildId }: ServicesTabProps) {
             <p className="text-xs text-zinc-400">
               Meta efetiva:{" "}
               <span className="text-emerald-400 font-semibold">
-                {Math.round(effectiveGoalHours * 10) / 10}h
+                {formatTime(effectiveGoalSeconds)}
               </span>{" "}
-              ({secondsToHours(data.weeklyGoal ?? 0)}h com {data.weeklyGoalDiscount ?? 0}% de desconto)
+              ({formatTime(data.weeklyGoal ?? 0)} com {data.weeklyGoalDiscount ?? 0}% de desconto)
             </p>
           </div>
         )}

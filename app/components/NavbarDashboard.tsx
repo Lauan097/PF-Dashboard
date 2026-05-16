@@ -12,8 +12,11 @@ import {
   LogOut,
   ChevronsUpDown,
   CreditCard,
-  Users,
   Clock,
+  FingerprintPattern,
+  UsersRound,
+  ClipboardList,
+  Scale,
 } from "lucide-react";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { TooltipButton } from "@/app/components/TooltipButton";
@@ -51,14 +54,33 @@ export default function SidebarDashboard() {
       label: "Configurações",
       icon: Settings,
       path: `/${guildId}/server-config`,
+      disabled: false,
     },
-    { label: "Editor V2", icon: Braces, path: `/${guildId}/editor-v2` },
-    { label: "Membros", icon: Users, path: `/${guildId}/members` },
+    { label: "Editor V2", icon: Braces, path: `/${guildId}/editor-v2`, disabled: false },
+    { label: "Membros", icon: UsersRound, path: `/${guildId}/members`, disabled: false },
     {
       label: "Bate Ponto",
       icon: Clock,
       path: `/${guildId}/point-manager`,
       disabled: false,
+    },
+    {
+      label: "Recrutamento",
+      icon: ClipboardList,
+      path: `/${guildId}/recruitment`,
+      disabled: true,
+    },
+    {
+      label: "Investigações",
+      icon: FingerprintPattern,
+      path: `/${guildId}/investigations`,
+      disabled: true,
+    },
+    {
+      label: "Jurídico",
+      icon: Scale,
+      path: `/${guildId}/juridic`,
+      disabled: true,
     },
   ];
 
