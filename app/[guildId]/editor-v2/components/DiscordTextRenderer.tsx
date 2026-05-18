@@ -26,7 +26,6 @@ interface DiscordTextProps {
   className?: string;
 }
 
-/** Stateful key generator scoped per-render to avoid React key conflicts */
 class KeyGen {
   private n = 0;
   next() {
@@ -72,7 +71,6 @@ function formatTimestamp(ts: number, fmt: string): string {
   return new Intl.DateTimeFormat("pt-BR", opts[fmt] ?? opts["f"]).format(date);
 }
 
-/** Renders inline Discord markdown on a plain-text segment (no mentions/code inside) */
 function renderMarkdown(text: string, kg: KeyGen): React.ReactNode[] {
   if (!text) return [];
 
@@ -114,7 +112,6 @@ function renderMarkdown(text: string, kg: KeyGen): React.ReactNode[] {
     ],
   ];
 
-  // Find the earliest-matching pattern
   let best: { idx: number; end: number; node: React.ReactNode } | null = null;
   for (const [re, render] of patterns) {
     const m = new RegExp(re.source, "s").exec(text);
@@ -132,12 +129,10 @@ function renderMarkdown(text: string, kg: KeyGen): React.ReactNode[] {
   return result;
 }
 
-// Regex patterns (compiled once, reset lastIndex when reused)
 const INLINE_PATTERN =
   /`([^`\n]+?)`|<@!?(\d+)>|<@&(\d+)>|<#(\d+)>|<(a)?:([^:>\s]+):(\d+)>|<t:(\d+)(?::([tTdDfFR]))?>|\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g;
 const CODE_BLOCK_PATTERN = /```(?:[\w-]+\n)?([\s\S]*?)```/g;
 
-/** Renders a single line with inline code, mentions, emojis, timestamps, and markdown */
 function renderInline(
   text: string,
   serverData: ServerDataForRenderer,
@@ -256,7 +251,6 @@ function isListLine(line: string) {
   return line.startsWith("- ") || line.startsWith("* ");
 }
 
-/** Splits text into lines and handles blockquotes and lists */
 function renderLines(
   text: string,
   serverData: ServerDataForRenderer,
@@ -342,7 +336,6 @@ function renderLines(
   return result;
 }
 
-/** Main component: renders Discord-formatted text with markdown, mentions, emojis, and timestamps */
 export function DiscordTextRenderer({
   text,
   serverData,

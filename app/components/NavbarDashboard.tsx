@@ -68,7 +68,7 @@ export default function SidebarDashboard() {
       label: "Recrutamento",
       icon: ClipboardList,
       path: `/${guildId}/recruitment`,
-      disabled: true,
+      disabled: false,
     },
     {
       label: "Investigações",

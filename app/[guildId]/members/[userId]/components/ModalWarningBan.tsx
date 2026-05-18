@@ -6,13 +6,6 @@ import type { Key } from "@heroui/react";
 import { Ban, TriangleAlert, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
-// IDs dos cargos de advertência por nível
-const WARNING_ROLES = {
-  1: "ROLE_ID_LEVEL_1",
-  2: "ROLE_ID_LEVEL_2",
-  3: "ROLE_ID_LEVEL_3",
-} as const;
-
 const WARNING_LEVELS = [
   { label: "Nível 1", value: 1 },
   { label: "Nível 2", value: 2 },

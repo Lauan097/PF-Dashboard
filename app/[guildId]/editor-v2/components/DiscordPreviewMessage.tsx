@@ -61,18 +61,8 @@ function getImageRows(images: { id: string; url: string }[]): { id: string; url:
   return rows;
 }
 
-function PreviewImageBlock({ block }: { block: ImageBlockType }) {
-  const images = block.images ?? [];
-
-  if (images.length === 0) {
-    return (
-      <div className="h-32 rounded-md bg-[#1e1f22] border border-dashed border-zinc-700 flex items-center justify-center text-zinc-500 text-sm">
-        Sem imagem
-      </div>
-    );
-  }
-
-  const GalleryItem = ({ img, className }: { img: { id: string; url: string }; className?: string }) => (
+function GalleryItem({ img, className }: { img: { id: string; url: string }; className?: string }) {
+  return (
     <div className={`relative overflow-hidden rounded-md ${className ?? ''}`}>
       {img.url ? (
         <Image src={img.url} alt="Gallery" fill className="object-cover" unoptimized />
@@ -83,6 +73,18 @@ function PreviewImageBlock({ block }: { block: ImageBlockType }) {
       )}
     </div>
   );
+}
+
+function PreviewImageBlock({ block }: { block: ImageBlockType }) {
+  const images = block.images ?? [];
+
+  if (images.length === 0) {
+    return (
+      <div className="h-32 rounded-md bg-[#1e1f22] border border-dashed border-zinc-700 flex items-center justify-center text-zinc-500 text-sm">
+        Sem imagem
+      </div>
+    );
+  }
 
   const count = images.length;
 

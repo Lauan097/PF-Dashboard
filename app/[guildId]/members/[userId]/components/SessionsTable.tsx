@@ -35,22 +35,6 @@ const STATUS_LABELS: Record<string, string> = {
   Cancelled: "Cancelada",
 };
 
-function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-}
-
-function fmtSeconds(seconds: number) {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  if (h > 0 && m > 0) return `${h}h ${m}m`;
-  if (h > 0) return `${h}h`;
-  return `${m}m`;
-}
-
 export default function SessionsTable({ userId, guildId }: SessionsTableProps) {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);

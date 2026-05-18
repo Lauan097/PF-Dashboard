@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Modal, Button, TextArea, Label } from "@heroui/react";
+import { useState, useEffect, startTransition } from "react";
+import { Modal, Button, TextArea } from "@heroui/react";
 import { Rocket } from "lucide-react";
 import { TextChannelSelect } from "@/app/components/TextChannelSelect";
 import { toast } from "sonner";
@@ -29,7 +29,9 @@ export default function ModalUp({ isOpen, onClose, guildId, userId }: ModalUpPro
 
   useEffect(() => {
     if (!isOpen || !guildId) return;
-    setLoadingRoles(true);
+    startTransition(() => {
+      setLoadingRoles(true);
+    });
     fetch(`/api/data/guild?guildId=${guildId}&type=roles`)
       .then((r) => r.json())
       .then((data) => {

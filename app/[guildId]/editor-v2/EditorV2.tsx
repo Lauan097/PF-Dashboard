@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, startTransition } from 'react';
 import Image from 'next/image';
 import { 
   Type, Image as ImageIcon, SeparatorHorizontal, Box
@@ -73,21 +73,26 @@ export default function DiscordV2Editor() {
 
   useEffect(() => {
     if (!guildId) return;
-    setHasLoadedBlocks(false);
-    const saved = localStorage.getItem(storageKey);
-    if (!saved) {
-      setBlocks(createDefaultBlocks());
-      setHasLoadedBlocks(true);
-      return;
-    }
 
-    try {
-      const parsed = JSON.parse(saved);
-      setBlocks(Array.isArray(parsed) ? parsed as EditorBlock[] : createDefaultBlocks());
-    } catch {
-      setBlocks(createDefaultBlocks());
-    }
-    setHasLoadedBlocks(true);
+    startTransition(() => {
+      setHasLoadedBlocks(false);
+      const saved = localStorage.getItem(storageKey);
+
+      if (!saved) {
+        setBlocks(createDefaultBlocks());
+        setHasLoadedBlocks(true);
+        return;
+      }
+
+      try {
+        const parsed = JSON.parse(saved);
+        setBlocks(Array.isArray(parsed) ? parsed as EditorBlock[] : createDefaultBlocks());
+      } catch {
+        setBlocks(createDefaultBlocks());
+      }
+
+      setHasLoadedBlocks(true);
+    });
   }, [guildId, storageKey]);
 
   useEffect(() => {
@@ -169,7 +174,9 @@ export default function DiscordV2Editor() {
   }, []);
 
   useEffect(() => {
-    validateBlocks(blocks);
+    startTransition(() => {
+      validateBlocks(blocks);
+    });
   }, [blocks, validateBlocks]);
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {

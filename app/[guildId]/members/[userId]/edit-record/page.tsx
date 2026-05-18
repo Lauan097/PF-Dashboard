@@ -3,9 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { Button, ButtonGroup, Spinner, Skeleton } from "@heroui/react";
-import { Input } from "@/components/input";
-import { Textarea } from "@/components/textarea";
+import { Button, ButtonGroup, Spinner, Skeleton, Input, TextArea } from "@heroui/react";
 import { CircleAlert, ChevronLeft, Plus, X, Save } from "lucide-react";
 import type { MemberRecord, MemberStatus } from "@/types/user";
 import { toast } from "sonner";
@@ -616,7 +614,7 @@ export default function EditRecordPage() {
             </div>
           </div>
           <EditField label="Anotações Internas" className="w-full">
-            <Textarea
+            <TextArea
               value={form.internalNotes}
               onChange={(e) => set("internalNotes", e.target.value)}
               placeholder="Anotações sobre o membro..."

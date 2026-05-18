@@ -19,7 +19,7 @@ import {
 import { FaCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { MemberOverview } from "@/types/user";
-import { ScrollShadow, Skeleton, Accordion, Label, ListBox, Select } from "@heroui/react";
+import { ScrollShadow, Skeleton, Accordion, ListBox, Select } from "@heroui/react";
 import {
   Chart as ChartJS,
   CategoryScale,

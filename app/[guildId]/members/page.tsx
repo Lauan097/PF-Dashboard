@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback, startTransition } from "react";
 import { motion } from "framer-motion";
 import { useParams } from "next/navigation";
 import { Dropdown, Separator } from "@heroui/react";
@@ -113,7 +113,9 @@ export default function MembersPage() {
 
   useEffect(() => {
     if (!guildId) return;
-    fetchMembers();
+    startTransition(() => {
+      fetchMembers();
+    });
   }, [guildId, fetchMembers]);
 
   useEffect(() => {

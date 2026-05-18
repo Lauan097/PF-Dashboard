@@ -47,19 +47,6 @@ export default function MemberTable({
   const router = useRouter();
   const guildId = params.guildId as string;
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "online":
-        return "bg-emerald-500";
-      case "idle":
-        return "bg-yellow-500";
-      case "dnd":
-        return "bg-red-500";
-      default:
-        return "bg-gray-500";
-    }
-  };
-
   const formatDate = (isoString: string) => {
     if (!isoString) return "Data desconhecida";
     try {
