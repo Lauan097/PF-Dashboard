@@ -443,11 +443,6 @@ export default function RecordTab({ userId, guildId }: RecordTabProps) {
                 className="w-full sm:w-1/2"
               />
               <FormField
-                label="Nascimento"
-                value={fmtDate(member.birthDate)}
-                className="w-full sm:w-1/4"
-              />
-              <FormField
                 label="Telefone"
                 value={member.realPhone ?? "N/A"}
                 className="w-full sm:w-1/3"
@@ -455,13 +450,13 @@ export default function RecordTab({ userId, guildId }: RecordTabProps) {
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
               <FormField
-                label="Cidade e Estado"
-                value={member.cityAndState ?? "N/A"}
-                className="w-full sm:w-2/2"
-              />
-              <FormField
                 label="Turnos Disponíveis"
                 value={member.availableShifts ?? "N/A"}
+                className="w-full"
+              />
+              <FormField
+                label="Email"
+                value={member.email ?? "N/A"}
                 className="w-full"
               />
             </div>
@@ -470,11 +465,6 @@ export default function RecordTab({ userId, guildId }: RecordTabProps) {
                 label="Status de Trabalho"
                 value={member.workStatus ?? "N/A"}
                 className="w-full sm:w-3/3"
-              />
-              <FormField
-                label="Email"
-                value={member.email ?? "N/A"}
-                className="w-full"
               />
             </div>
           </div>
@@ -503,7 +493,12 @@ export default function RecordTab({ userId, guildId }: RecordTabProps) {
             </div>
             <div className="flex flex-col items-center gap-2 flex-1">
               <div className="h-16 flex items-end justify-center">
-                <span className="text-xs italic"></span>
+                <Image 
+                  src="/assinatura_albert.png"
+                  alt="Assinatura do Diretor"
+                  width="150"
+                  height="90"
+                />
               </div>
               <div className="w-full border-b border-zinc-600" />
               <p className="text-[11px] text-zinc-800 uppercase tracking-widest">

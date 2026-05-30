@@ -224,7 +224,7 @@ export default function RecruitmentDetailModal({
                     Nenhum participante inscrito nesta edição.
                   </div>
                 ) : (
-                  <ScrollShadow className="h-44 scrollbar-none">
+                  <ScrollShadow className="h-54 scrollbar-none">
                     <div className="flex flex-col gap-2.5">
                       {recruitment.participants.map((p) => {
                         const res = p.result ? resultConfig[p.result] : null;

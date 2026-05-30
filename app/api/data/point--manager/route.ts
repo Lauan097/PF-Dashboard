@@ -13,6 +13,7 @@ export async function GET(req: Request) {
 
   const { searchParams } = new URL(req.url);
   const guildId = searchParams.get("guildId");
+  const weekOffset = parseInt(searchParams.get("weekOffset") || "0", 10);
   const userId = session.user.id;
 
   if (!guildId) {
@@ -27,7 +28,7 @@ export async function GET(req: Request) {
       const timeout = setTimeout(() => reject(new Error("Timeout")), 8000);
       socket.emit(
         "pointManager:getData",
-        { userId, guildId },
+        { userId, guildId, weekOffset },
         (response: PointManagerResponse) => {
           clearTimeout(timeout);
           if (!response.success) reject(new Error(response.error));

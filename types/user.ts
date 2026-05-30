@@ -124,6 +124,8 @@ export interface TopPartner {
 }
 
 export interface MemberOverview {
+  weekStart: string;
+  weekEnd: string;
   timeCards: TimeCard[];
   weeklyActivity: WeeklyActivity[];
   monthlyActivity: MonthlyActivity[];

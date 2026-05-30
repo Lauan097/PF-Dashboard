@@ -37,8 +37,8 @@ export function ServerSelect({
 
   return (
     <Popover isOpen={popoverOpen} onOpenChange={setPopoverOpen}>
-      <Popover.Trigger>
-        <div className={`flex items-center ${mode === 0 ? 'w-60 bg-white/3' : ''} p-1.5 space-x-3 rounded-full transition-colors cursor-pointer overflow-hidden ${popoverOpen ? 'bg-white/8' : 'hover:bg-white/8'}`}>
+      <Popover.Trigger className="w-full">
+        <div className={`flex items-center w-full ${mode === 0 ? 'bg-white/3' : ''} p-1.5 space-x-3 rounded-full transition-colors cursor-pointer overflow-hidden ${popoverOpen ? 'bg-white/8' : 'hover:bg-white/8'}`}>
           <div className="h-9 w-9 min-w-9 shrink-0">
             <Image
               src={selectServer.icon ?? "https://cdn.discordapp.com/embed/avatars/0.png"}

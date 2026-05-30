@@ -108,7 +108,7 @@ export default function SidebarDashboard() {
 
   const sidebarAnimation = isMobile
     ? { x: isMobileOpen ? 0 : "-100%", width: 280 }
-    : { width: isCollapsed ? 72 : 266, x: 0 };
+    : { width: isCollapsed ? 64 : 264, x: 0 };
 
   if (pathname?.startsWith("/login")) return null;
 
@@ -140,13 +140,13 @@ export default function SidebarDashboard() {
         animate={sidebarAnimation}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
         onPanEnd={handleDragEnd}
-        className={`h-screen bg-[#171717] border-transparent flex flex-col px-2 py-2 pr-5 z-40 overflow-hidden ${isMobile ? "fixed top-0 left-0 shadow-2xl" : "sticky top-0"}`}
+        className={`h-screen bg-[#171717] flex flex-col px-2 py-2 z-40 overflow-hidden ${isMobile ? "fixed top-0 left-0 shadow-2xl" : "sticky top-0"}`}
       >
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="absolute inset-y-0 right-0 z-20 w-4 cursor-e-resize transition-all bg-[linear-gradient(to_right,#171717_0%,#171717_50%,#0a0a0a_50%,#0a0a0a_100%)]
-            after:absolute after:inset-y-0 after:left-1/2 after:-translate-x-1/2 after:w-0.5 after:bg-zinc-800 after:transition-colors hover:after:bg-zinc-600
-            focus:outline-none outline-none
+          className="absolute inset-y-0 -right-1.5 z-20 w-4 cursor-e-resize transition-all after:absolute after:inset-y-0 after:left-1/2 
+            after:-translate-x-1/2 after:w-0.5 after:bg-zinc-800 after:transition-colors hover:after:bg-zinc-600 focus:outline-none 
+            outline-none
           "
         />
 
@@ -201,8 +201,7 @@ export default function SidebarDashboard() {
                   if (isMobile) setIsMobileOpen(false);
                 }}
                 className={cn(
-                  `flex items-center justify-start overflow-hidden hover:bg-white/5 w-full gap-3 cursor-pointer h-10 px-3.5`,
-                  `${pathname === item.path ? "bg-white/5" : ""}`,
+                  "flex justify-start overflow-hidden hover:bg-white/5 w-full gap-3 cursor-pointer h-10"
                 )}
                 disabled={item.disabled}
               />
@@ -214,10 +213,10 @@ export default function SidebarDashboard() {
           <Dropdown isOpen={open} onOpenChange={setOpen}>
             <Dropdown.Trigger
               className={cn(
-                `flex items-center h-12 px-2 py-2 space-x-3 rounded-full transition-colors overflow-hidden`,
+                `flex items-center w-full h-12 px-2 py-2 space-x-3 rounded-full transition-colors overflow-hidden`,
                 isCollapsed
-                  ? "hover:bg-white/5 w-fit"
-                  : "min-w-60 bg-white/3 hover:bg-white/5",
+                  ? "hover:bg-white/5"
+                  : "bg-white/3 hover:bg-white/5",
                 open ? "bg-white/5" : "",
               )}
             >

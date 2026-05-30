@@ -15,11 +15,14 @@ import {
   Minus,
   History,
   TrendingUp,
+  ChevronLeft,
+  ChevronRight,
+  CalendarRange,
 } from "lucide-react";
 import { FaCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { MemberOverview } from "@/types/user";
-import { ScrollShadow, Skeleton, Accordion, ListBox, Select } from "@heroui/react";
+import { ScrollShadow, Skeleton, Accordion, Button } from "@heroui/react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -111,6 +114,7 @@ export default function OverviewTab({ userId, guildId }: OverviewTabProps) {
   const [overview, setOverview] = useState<MemberOverview | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [weekOffset, setWeekOffset] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -120,7 +124,7 @@ export default function OverviewTab({ userId, guildId }: OverviewTabProps) {
       setError(null);
       try {
         const res = await fetch(
-          `/api/data/user/get-overview?guildId=${guildId}&userId=${userId}`,
+          `/api/data/user/get-overview?guildId=${guildId}&userId=${userId}&weekOffset=${weekOffset}`,
         );
         const data = await res.json();
         if (cancelled) return;
@@ -147,7 +151,7 @@ export default function OverviewTab({ userId, guildId }: OverviewTabProps) {
     return () => {
       cancelled = true;
     };
-  }, [userId, guildId]);
+  }, [userId, guildId, weekOffset]);
 
   if (loading) return <OverviewSkeleton />;
 
@@ -414,29 +418,43 @@ export default function OverviewTab({ userId, guildId }: OverviewTabProps) {
       </div>
 
       <div className="bg-[#1a1a1a] rounded-2xl p-5 border border-white/5">
-        <span className="text-zinc-400 text-xs font-semibold flex items-center gap-2 pb-3 border-b border-white/5 mb-4">
-          <Activity size={14} className="text-blue-500" /> Atividade Semanal de Patrulhamento
-          <div className="ml-auto w-40">
-            <Select fullWidth placeholder="Selecione" aria-label="Select one">
-              <Select.Trigger>
-                <Select.Value />
-                <Select.Indicator />
-              </Select.Trigger>
-              <Select.Popover className="w-auto">
-                <ListBox>
-                  <ListBox.Item id="actual-week" textValue="Esta Semana">
-                    Esta Semana
-                    <ListBox.ItemIndicator />
-                  </ListBox.Item>
-                  <ListBox.Item id="previous-week" textValue="Semana Anterior">
-                    Semana Anterior
-                    <ListBox.ItemIndicator />
-                  </ListBox.Item>
-                </ListBox>
-              </Select.Popover>
-            </Select>
+        <div className="flex items-center justify-between pb-3 border-b border-white/5 mb-4">
+          <span className="text-zinc-400 text-xs font-semibold flex flex-col gap-2">
+            <span className="flex items-center gap-2">
+              <Activity size={14} className="text-blue-500" /> Atividade Semanal de Patrulhamento
+            </span>
+            {overview.weekStart && overview.weekEnd && (
+              <p className="text-[10px] text-zinc-600 mb-3">
+                {formatDate(overview.weekStart)} — {formatDate(overview.weekEnd)}
+              </p>
+            )}
+          </span>
+          <div className="flex items-center gap-1 rounded-full bg-white/5 border border-white/10 px-2 py-1">
+            <Button
+              onClick={() => setWeekOffset(weekOffset + 1)}
+              size="sm"
+              variant="tertiary"
+              className="p-1 min-w-0 h-7 w-7"
+            >
+              <ChevronLeft size={14} />
+            </Button>
+            <div className="flex items-center gap-1.5 px-2 text-xs text-zinc-400">
+              <CalendarRange size={12} />
+              <span>
+                {weekOffset === 0 ? "Semana atual" : `${weekOffset} ${weekOffset === 1 ? "semana" : "semanas"} atrás`}
+              </span>
+            </div>
+            <Button
+              onClick={() => setWeekOffset(Math.max(0, weekOffset - 1))}
+              isDisabled={weekOffset === 0}
+              size="sm"
+              variant="tertiary"
+              className="p-1 min-w-0 h-7 w-7"
+            >
+              <ChevronRight size={14} />
+            </Button>
           </div>
-        </span>
+        </div>
         <div className="h-52 w-full">
           <Line data={weeklyChartData} options={weeklyChartOptions} />
         </div>

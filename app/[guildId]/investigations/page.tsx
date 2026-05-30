@@ -20,7 +20,6 @@ export default function InvestigationsPage() {
         <Modal.Backdrop isDismissable={false}>
           <Modal.Container size="full">
             <Modal.Dialog className="h-full flex flex-col">
-              <Modal.CloseTrigger className='top-1.5 right-1.5' />
               <Modal.Body className="p-0 flex-1 overflow-hidden">
                 <ExcalidrawComponent />
               </Modal.Body>

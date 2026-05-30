@@ -11,15 +11,10 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { Bar } from "react-chartjs-2";
 import {
   CheckCircle2,
   XCircle,
   Target,
-  Clock,
-  Trophy,
-  MessageSquare,
-  Mic,
   Pencil,
   Save,
   X,
@@ -28,23 +23,18 @@ import {
   RefreshCw,
   CalendarRange,
   MinusCircle,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import ErrorPage from "@/app/components/ErrorPage";
-import { Skeleton } from "@heroui/react";
+import { Button, Skeleton } from "@heroui/react";
 import { variants } from "@/types/animate";
 import { PointManagerData, PointManagerMember } from "@/types/globalData";
+import { formatTime, formatDate } from "@/utils/timeFormat";
+import ModalUp from "@/app/[guildId]/members/[userId]/components/ModalUp";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
-
-function formatTime(seconds: number): string {
-  if (seconds <= 0) return "0m";
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  if (h > 0 && m > 0) return `${h}h ${m}m`;
-  if (h > 0) return `${h}h`;
-  return `${m}m`;
-}
 
 function secondsToHoursMinutes(seconds: number): {
   hours: number;
@@ -58,73 +48,6 @@ function secondsToHoursMinutes(seconds: number): {
 
 function hoursMinutesToSeconds(hours: number, minutes: number): number {
   return hours * 3600 + minutes * 60;
-}
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("pt-BR", {
-    day: "2-digit",
-    month: "short",
-  });
-}
-
-function shortLabel(name: string): string {
-  return (
-    name
-      .replace(/^\[.*?\]\s*·\s*/, "")
-      .replace(/「.*?」/, "")
-      .trim() || name
-  );
-}
-
-const CHART_COLORS = [
-  "#6366f1",
-  "#8b5cf6",
-  "#a78bfa",
-  "#818cf8",
-  "#4f46e5",
-  "#7c3aed",
-  "#9333ea",
-  "#a855f7",
-  "#c4b5fd",
-  "#ddd6fe",
-];
-
-const BAR_OPTIONS = {
-  indexAxis: "y" as const,
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: { display: false },
-    tooltip: {
-      backgroundColor: "#18181b",
-      borderColor: "#27272a",
-      borderWidth: 1,
-      titleColor: "#e4e4e7",
-      bodyColor: "#a1a1aa",
-      padding: 8,
-      cornerRadius: 8,
-    },
-  },
-  scales: {
-    x: {
-      grid: { color: "rgba(255,255,255,0.05)" },
-      ticks: { color: "#71717a", font: { size: 11 } },
-      border: { display: false },
-    },
-    y: {
-      grid: { display: false },
-      ticks: { color: "#a1a1aa", font: { size: 12 } },
-      border: { display: false },
-    },
-  },
-};
-
-function SectionTitle({ children }: { children: React.ReactNode }) {
-  return (
-    <h2 className="mb-4 text-sm font-semibold uppercase tracking-widest text-zinc-500">
-      {children}
-    </h2>
-  );
 }
 
 function StatCard({
@@ -167,10 +90,12 @@ function MemberRow({
   member,
   index,
   metGoal,
+  onMemberClick,
 }: {
   member: PointManagerMember;
   index: number;
   metGoal: boolean;
+  onMemberClick?: (userId: string) => void;
 }) {
   const pct =
     member.effectiveGoal > 0
@@ -181,7 +106,14 @@ function MemberRow({
       : 0;
 
   return (
-    <tr className="border-b border-white/5 hover:bg-white/3 transition-colors">
+    <tr 
+      className={`border-b border-white/5 transition-colors ${
+        metGoal && onMemberClick 
+          ? "hover:bg-emerald-500/10 cursor-pointer" 
+          : "hover:bg-white/3"
+      }`}
+      onClick={() => metGoal && onMemberClick?.(member.userId)}
+    >
       <td className="py-3 px-4 text-xs font-bold text-zinc-500 w-8">
         {index + 1}
       </td>
@@ -235,6 +167,7 @@ function MembersTable({
   metGoal,
   loading,
   emptyMsg,
+  onMemberClick,
 }: {
   title: string;
   icon: React.ElementType;
@@ -243,6 +176,7 @@ function MembersTable({
   metGoal: boolean;
   loading: boolean;
   emptyMsg: string;
+  onMemberClick?: (userId: string) => void;
 }) {
   return (
     <div className="rounded-2xl bg-white/5 border border-white/8 overflow-hidden">
@@ -258,12 +192,12 @@ function MembersTable({
       <div className="overflow-x-auto">
         {loading ? (
           <div className="p-5 space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => (
+            {Array.from({ length: 12 }).map((_, i) => (
               <Skeleton key={i} className="h-10 w-full rounded-xl" />
             ))}
           </div>
         ) : members.length === 0 ? (
-          <p className="text-xs text-zinc-500 py-10 text-center">{emptyMsg}</p>
+          <p className="text-xs text-zinc-500 py-60 text-center">{emptyMsg}</p>
         ) : (
           <table className="w-full text-left">
             <thead>
@@ -287,7 +221,13 @@ function MembersTable({
             </thead>
             <tbody>
               {members.map((m, i) => (
-                <MemberRow key={m.id} member={m} index={i} metGoal={metGoal} />
+                <MemberRow 
+                  key={m.id} 
+                  member={m} 
+                  index={i} 
+                  metGoal={metGoal}
+                  onMemberClick={onMemberClick}
+                />
               ))}
             </tbody>
           </table>
@@ -297,44 +237,20 @@ function MembersTable({
   );
 }
 
-function ChartCard({
-  title,
-  icon: Icon,
-  loading,
-  children,
-  height = 220,
-}: {
-  title: string;
-  icon: React.ElementType;
-  loading: boolean;
-  children: React.ReactNode;
-  height?: number;
-}) {
-  return (
-    <div className="rounded-2xl bg-white/5 border border-white/8 p-5">
-      <div className="flex items-center gap-2 mb-4">
-        <Icon size={15} className="text-indigo-400" />
-        <span className="text-sm font-semibold text-zinc-200">{title}</span>
-      </div>
-      {loading ? (
-        <Skeleton className={`w-full rounded-xl`} style={{ height }} />
-      ) : (
-        <div style={{ height }}>{children}</div>
-      )}
-    </div>
-  );
-}
-
 export default function PointManagerPage() {
   const [data, setData] = useState<PointManagerData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [weekOffset, setWeekOffset] = useState(0);
 
   const [editingGoal, setEditingGoal] = useState(false);
   const [goalHours, setGoalHours] = useState("");
   const [goalMinutes, setGoalMinutes] = useState("");
   const [savingGoal, setSavingGoal] = useState(false);
+
+  const [modalUpOpen, setModalUpOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   const params = useParams();
   const guildId = params.guildId as string;
@@ -344,7 +260,7 @@ export default function PointManagerPage() {
       if (!silent) setLoading(true);
       else setRefreshing(true);
       try {
-        const res = await fetch(`/api/data/point--manager?guildId=${guildId}`);
+        const res = await fetch(`/api/data/point--manager?guildId=${guildId}&weekOffset=${weekOffset}`);
         const result = await res.json();
         if (result.success) {
           setData(result.data);
@@ -360,7 +276,7 @@ export default function PointManagerPage() {
         }, 800);
       }
     },
-    [guildId],
+    [guildId, weekOffset],
   );
 
   useEffect(() => {
@@ -404,6 +320,16 @@ export default function PointManagerPage() {
     } finally {
       setSavingGoal(false);
     }
+  }
+
+  function handleMemberClick(userId: string) {
+    setSelectedUserId(userId);
+    setModalUpOpen(true);
+  }
+
+  function handleModalClose() {
+    setModalUpOpen(false);
+    setSelectedUserId(null);
   }
 
   const { metGoal, notMetGoal, noGoal } = useMemo(() => {
@@ -463,7 +389,7 @@ export default function PointManagerPage() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 className="flex items-center gap-2"
               >
-                <div className="flex items-center gap-1 rounded-xl bg-white/8 border border-white/12 px-3 py-2">
+                <div className="flex items-center gap-1 rounded-full bg-white/8 border border-white/12 px-2 py-1.5">
                   <input
                     type="number"
                     min={0}
@@ -484,20 +410,21 @@ export default function PointManagerPage() {
                   />
                   <span className="text-zinc-400 text-sm">m</span>
                 </div>
-                <button
+                <Button
                   onClick={saveGoal}
-                  disabled={savingGoal}
-                  className="flex items-center gap-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 px-3 py-2 text-xs font-semibold text-white transition-colors"
+                  isDisabled={savingGoal}
+                  size="sm"
                 >
                   <Save size={13} />
                   {savingGoal ? "Salvando..." : "Salvar"}
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => setEditingGoal(false)}
-                  className="flex items-center justify-center rounded-xl bg-white/8 hover:bg-white/12 border border-white/10 p-2 text-zinc-400 hover:text-white transition-colors"
+                  size="sm"
+                  variant="tertiary"
                 >
                   <X size={14} />
-                </button>
+                </Button>
               </motion.div>
             ) : (
               <motion.div
@@ -507,7 +434,7 @@ export default function PointManagerPage() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 className="flex items-center gap-2"
               >
-                <div className="flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-4 py-2">
+                <div className="flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-2 py-1.5">
                   <Target size={14} className="text-indigo-400" />
                   <span className="text-sm text-zinc-300">Meta da semana:</span>
                   {loading ? (
@@ -520,40 +447,63 @@ export default function PointManagerPage() {
                     </span>
                   )}
                 </div>
-                <button
+                <Button
                   onClick={openEditGoal}
-                  className="flex items-center gap-1.5 rounded-xl bg-white/8 hover:bg-white/12 border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:text-white transition-colors"
+                  size="sm"
+                  variant="tertiary"
                 >
                   <Pencil size={13} />
                   Definir meta
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => fetchData(true)}
-                  disabled={refreshing}
-                  className="flex items-center justify-center rounded-xl bg-white/8 hover:bg-white/12 border border-white/10 p-2 text-zinc-400 hover:text-white transition-colors disabled:opacity-50"
+                  isDisabled={refreshing}
+                  size="sm"
+                  variant="secondary"
                 >
-                  <RefreshCw
-                    size={14}
-                    className={refreshing ? "animate-spin" : ""}
-                  />
-                </button>
+                  <RefreshCw size={14} className={refreshing ? "animate-spin" : ""}/>
+                </Button>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
 
         {data && !loading && (
-          <div className="flex items-center gap-1.5 text-xs text-zinc-600">
-            <CalendarRange size={12} />
-            <span>
-              Semana: {formatDate(data.weekStart)} — {formatDate(data.weekEnd)}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1 rounded-full bg-white/5 border border-white/10 px-2 py-1">
+              <Button
+                onClick={() => setWeekOffset(weekOffset + 1)}
+                size="sm"
+                variant="tertiary"
+                className="p-1 min-w-0 h-7 w-7"
+              >
+                <ChevronLeft size={14} />
+              </Button>
+              <div className="flex items-center gap-1.5 px-2 text-xs text-zinc-400">
+                <CalendarRange size={12} />
+                <span>
+                  {weekOffset === 0 ? "Semana atual" : `${weekOffset} ${weekOffset === 1 ? "semana" : "semanas"} atrás`}
+                </span>
+              </div>
+              <Button
+                onClick={() => setWeekOffset(Math.max(0, weekOffset - 1))}
+                isDisabled={weekOffset === 0}
+                size="sm"
+                variant="tertiary"
+                className="p-1 min-w-0 h-7 w-7"
+              >
+                <ChevronRight size={14} />
+              </Button>
+            </div>
+            <span className="text-xs text-zinc-600">
+              {formatDate(data.weekStart)} — {formatDate(data.weekEnd)}
             </span>
           </div>
         )}
       </div>
 
-      <section>
-        <SectionTitle>Resumo da Semana</SectionTitle>
+      <section className="bg-[#1a1a1a] p-6 rounded-xl">
+        <h1 className="text-3xl text-center font-extrabold pb-4">Resumo da Semana</h1>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <StatCard
             icon={Users}
@@ -586,8 +536,8 @@ export default function PointManagerPage() {
         </div>
       </section>
 
-      <section>
-        <SectionTitle>Status das Metas</SectionTitle>
+      <section className="bg-[#1a1a1a] p-6 rounded-xl">
+        <h1 className="text-3xl text-center font-extrabold pb-4">Status das Metas</h1>
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
           <MembersTable
             title="Cumpriram a Meta"
@@ -597,6 +547,7 @@ export default function PointManagerPage() {
             metGoal
             loading={loading}
             emptyMsg="Nenhum membro cumpriu a meta ainda."
+            onMemberClick={handleMemberClick}
           />
           <MembersTable
             title="Não Cumpriram a Meta"
@@ -605,7 +556,7 @@ export default function PointManagerPage() {
             members={notMetGoal}
             metGoal={false}
             loading={loading}
-            emptyMsg="Todos os membros com meta definiram cumpriram. Parabéns!"
+            emptyMsg="Todos os membros com metas definidas cumpriram as mesmas. Parabéns!"
           />
         </div>
 
@@ -637,191 +588,14 @@ export default function PointManagerPage() {
         )}
       </section>
 
-      <section>
-        <SectionTitle>Estatísticas</SectionTitle>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <ChartCard
-            title="Top Tempo esta Semana"
-            icon={Clock}
-            loading={loading}
-            height={230}
-          >
-            {!data || data.stats.topByWeeklyTime.length === 0 ? (
-              <p className="text-xs text-zinc-500 h-full flex items-center justify-center">
-                Nenhum dado disponível.
-              </p>
-            ) : (
-              <Bar
-                data={{
-                  labels: data!.stats.topByWeeklyTime.map((x) =>
-                    shortLabel(x.name),
-                  ),
-                  datasets: [
-                    {
-                      data: data!.stats.topByWeeklyTime.map(
-                        (x) => Math.round((x.seconds / 3600) * 10) / 10,
-                      ),
-                      backgroundColor: CHART_COLORS,
-                      borderRadius: 4,
-                      barThickness: 16,
-                    },
-                  ],
-                }}
-                options={{
-                  ...BAR_OPTIONS,
-                  plugins: {
-                    ...BAR_OPTIONS.plugins,
-                    tooltip: {
-                      ...BAR_OPTIONS.plugins.tooltip,
-                      callbacks: { label: (ctx) => ` ${ctx.parsed.x}h` },
-                    },
-                  },
-                  scales: {
-                    ...BAR_OPTIONS.scales,
-                    x: {
-                      ...BAR_OPTIONS.scales.x,
-                      ticks: {
-                        ...BAR_OPTIONS.scales.x.ticks,
-                        callback: (v) => `${v}h`,
-                      },
-                    },
-                  },
-                }}
-              />
-            )}
-          </ChartCard>
-
-          <ChartCard
-            title="Top Sessões esta Semana"
-            icon={Trophy}
-            loading={loading}
-            height={230}
-          >
-            {!data || data.stats.topBySessions.length === 0 ? (
-              <p className="text-xs text-zinc-500 h-full flex items-center justify-center">
-                Nenhum dado disponível.
-              </p>
-            ) : (
-              <Bar
-                data={{
-                  labels: data!.stats.topBySessions.map((x) =>
-                    shortLabel(x.name),
-                  ),
-                  datasets: [
-                    {
-                      data: data!.stats.topBySessions.map((x) => x.count),
-                      backgroundColor: CHART_COLORS,
-                      borderRadius: 4,
-                      barThickness: 16,
-                    },
-                  ],
-                }}
-                options={{
-                  ...BAR_OPTIONS,
-                  plugins: {
-                    ...BAR_OPTIONS.plugins,
-                    tooltip: {
-                      ...BAR_OPTIONS.plugins.tooltip,
-                      callbacks: { label: (ctx) => ` ${ctx.parsed.x} sessões` },
-                    },
-                  },
-                }}
-              />
-            )}
-          </ChartCard>
-
-          <ChartCard
-            title="Mais Tempo em Voz (Geral)"
-            icon={Mic}
-            loading={loading}
-            height={230}
-          >
-            {!data || data.stats.topByVoice.length === 0 ? (
-              <p className="text-xs text-zinc-500 h-full flex items-center justify-center">
-                Nenhum dado disponível.
-              </p>
-            ) : (
-              <Bar
-                data={{
-                  labels: data!.stats.topByVoice.map((x) => shortLabel(x.name)),
-                  datasets: [
-                    {
-                      data: data!.stats.topByVoice.map(
-                        (x) => Math.round((x.seconds / 3600) * 10) / 10,
-                      ),
-                      backgroundColor: CHART_COLORS,
-                      borderRadius: 4,
-                      barThickness: 16,
-                    },
-                  ],
-                }}
-                options={{
-                  ...BAR_OPTIONS,
-                  plugins: {
-                    ...BAR_OPTIONS.plugins,
-                    tooltip: {
-                      ...BAR_OPTIONS.plugins.tooltip,
-                      callbacks: { label: (ctx) => ` ${ctx.parsed.x}h` },
-                    },
-                  },
-                  scales: {
-                    ...BAR_OPTIONS.scales,
-                    x: {
-                      ...BAR_OPTIONS.scales.x,
-                      ticks: {
-                        ...BAR_OPTIONS.scales.x.ticks,
-                        callback: (v) => `${v}h`,
-                      },
-                    },
-                  },
-                }}
-              />
-            )}
-          </ChartCard>
-
-          <ChartCard
-            title="Mais Mensagens (Geral)"
-            icon={MessageSquare}
-            loading={loading}
-            height={230}
-          >
-            {!data || data.stats.topByMessages.length === 0 ? (
-              <p className="text-xs text-zinc-500 h-full flex items-center justify-center">
-                Nenhum dado disponível.
-              </p>
-            ) : (
-              <Bar
-                data={{
-                  labels: data!.stats.topByMessages.map((x) =>
-                    shortLabel(x.name),
-                  ),
-                  datasets: [
-                    {
-                      data: data!.stats.topByMessages.map((x) => x.count),
-                      backgroundColor: CHART_COLORS,
-                      borderRadius: 4,
-                      barThickness: 16,
-                    },
-                  ],
-                }}
-                options={{
-                  ...BAR_OPTIONS,
-                  plugins: {
-                    ...BAR_OPTIONS.plugins,
-                    tooltip: {
-                      ...BAR_OPTIONS.plugins.tooltip,
-                      callbacks: {
-                        label: (ctx) =>
-                          ` ${(ctx.parsed.x ?? 0).toLocaleString("pt-BR")} msgs`,
-                      },
-                    },
-                  },
-                }}
-              />
-            )}
-          </ChartCard>
-        </div>
-      </section>
+      {selectedUserId && (
+        <ModalUp
+          isOpen={modalUpOpen}
+          onClose={handleModalClose}
+          guildId={guildId}
+          userId={selectedUserId}
+        />
+      )}
     </motion.div>
   );
 }

@@ -14,6 +14,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const guildId = searchParams.get('guildId');
   const userId  = searchParams.get('userId');
+  const weekOffset = parseInt(searchParams.get('weekOffset') || '0', 10);
 
   if (!guildId) {
     return NextResponse.json({ error: "ID do servidor não fornecido" }, { status: 400 });
@@ -27,7 +28,7 @@ export async function GET(req: Request) {
     const data = await new Promise<MemberOverview>((resolve, reject) => {
       const timeout = setTimeout(() => reject(new Error("Timeout ao buscar visão geral")), 8000);
 
-      socket.emit("member:getOverview", { userId, guildId, authorId: session.user.id }, (res: MemberOverviewResult) => {
+      socket.emit("member:getOverview", { userId, guildId, authorId: session.user.id, weekOffset }, (res: MemberOverviewResult) => {
         clearTimeout(timeout);
         if (!res.success) {
           reject(new Error(res.error || "Erro no Bot"));

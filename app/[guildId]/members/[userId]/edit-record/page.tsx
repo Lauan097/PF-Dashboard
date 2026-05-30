@@ -22,7 +22,7 @@ function EditField({
   children,
   className = "",
 }: {
-  label: string;
+  label?: string;
   children: React.ReactNode;
   className?: string;
 }) {
@@ -67,7 +67,7 @@ function ListEditor({
         {items.map((item, i) => (
           <li
             key={i}
-            className="flex items-center gap-2 bg-zinc-200 border border-zinc-400 px-2 py-1 text-sm text-zinc-800"
+            className="flex items-center gap-2 bg-zinc-200 border border-zinc-400 px-2 py-0.5 text-sm text-zinc-800"
           >
             <span className="flex-1">{item}</span>
             <button
@@ -499,11 +499,8 @@ export default function EditRecordPage() {
                 placeholder="—"
               />
             </EditField>
-            <div className="w-full sm:w-1/3 flex flex-col gap-3 pb-1">
-              <span className="text-xs text-black uppercase tracking-wider shrink-0">
-                Possui Antecedentes?
-              </span>
-              <div className="flex items-center gap-4">
+            <div className="w-full sm:w-1/3 flex flex-col gap-3">
+              <EditField label="Antecedentes?" className="w-full">
                 <Input
                   type="text"
                   value={form.antecedents}
@@ -511,7 +508,7 @@ export default function EditRecordPage() {
                   className={inputClass}
                   placeholder="—"
                 />
-              </div>
+              </EditField>
             </div>
           </div>
         </div>
@@ -657,15 +654,7 @@ export default function EditRecordPage() {
                 placeholder="—"
               />
             </EditField>
-            <EditField label="Nascimento" className="w-full sm:w-1/4">
-              <Input
-                type="date"
-                value={form.birthDate}
-                onChange={(e) => set("birthDate", e.target.value)}
-                className={inputClass}
-              />
-            </EditField>
-            <EditField label="Telefone" className="w-full sm:w-1/3">
+            <EditField label="Telefone" className="w-full sm:w-1/2">
               <Input
                 value={form.realPhone}
                 onChange={(e) => set("realPhone", e.target.value)}
@@ -675,18 +664,19 @@ export default function EditRecordPage() {
             </EditField>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">
-            <EditField label="Cidade e Estado" className="w-full sm:w-1/2">
-              <Input
-                value={form.cityAndState}
-                onChange={(e) => set("cityAndState", e.target.value)}
-                className={inputClass}
-                placeholder="—"
-              />
-            </EditField>
             <EditField label="Status de Trabalho" className="w-full sm:w-1/2">
               <Input
                 value={form.workStatus}
                 onChange={(e) => set("workStatus", e.target.value)}
+                className={inputClass}
+                placeholder="—"
+              />
+            </EditField>
+            <EditField label="Email" className="w-full sm:w-1/2">
+              <Input
+                type="email"
+                value={form.email}
+                onChange={(e) => set("email", e.target.value)}
                 className={inputClass}
                 placeholder="—"
               />
@@ -699,15 +689,6 @@ export default function EditRecordPage() {
               onChange={(items) => set("availableShifts", items)}
             />
           </div>
-          <EditField label="Email" className="w-full">
-            <Input
-              type="email"
-              value={form.email}
-              onChange={(e) => set("email", e.target.value)}
-              className={inputClass}
-              placeholder="—"
-            />
-          </EditField>
         </div>
 
         <div className="pt-8 flex flex-row items-end justify-around gap-8">
