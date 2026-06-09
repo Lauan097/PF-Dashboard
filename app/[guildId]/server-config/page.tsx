@@ -136,7 +136,11 @@ export default function ServerConfigPage() {
   }, [guildId]);
 
   useEffect(() => {
-    if (guildId) fetchConfig();
+    if (guildId) {
+      setTimeout(() => {
+        fetchConfig();
+      }, 0);
+    }
   }, [guildId, fetchConfig]);
 
   const handleSave = async () => {

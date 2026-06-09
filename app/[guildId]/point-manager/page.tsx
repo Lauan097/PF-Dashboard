@@ -280,7 +280,9 @@ export default function PointManagerPage() {
   );
 
   useEffect(() => {
-    fetchData();
+    setTimeout(() => {
+      fetchData();
+    }, 0);
   }, [fetchData]);
 
   function openEditGoal() {

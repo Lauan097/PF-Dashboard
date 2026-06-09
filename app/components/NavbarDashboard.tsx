@@ -74,13 +74,7 @@ export default function SidebarDashboard() {
       label: "Investigações",
       icon: FingerprintPattern,
       path: `/${guildId}/investigations`,
-      disabled: true,
-    },
-    {
-      label: "Jurídico",
-      icon: Scale,
-      path: `/${guildId}/juridic`,
-      disabled: true,
+      disabled: false,
     },
   ];
 

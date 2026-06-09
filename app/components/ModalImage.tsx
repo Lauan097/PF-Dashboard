@@ -66,24 +66,28 @@ export const ModalImageUploader = ({
 
   useEffect(() => {
     if (!isOpen) {
-      setError(null);
+      setTimeout(() => {
+        setError(null);
+      }, 0);
     }
   }, [isOpen]);
 
   useEffect(() => {
     if (isOpen) {
-      setLoadingImages(true);
-      fetch("/api/upload")
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success) {
-            setRecentImages(data.imagesUrl || []);
-          } else {
-            setRecentImages([]);
-          }
-        })
-        .catch(() => setRecentImages([]))
-        .finally(() => setLoadingImages(false));
+      setTimeout(() => {
+        setLoadingImages(true);
+        fetch("/api/upload")
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              setRecentImages(data.imagesUrl || []);
+            } else {
+              setRecentImages([]);
+            }
+          })
+          .catch(() => setRecentImages([]))
+          .finally(() => setLoadingImages(false));
+      }, 0);
     }
   }, [isOpen]);
 
