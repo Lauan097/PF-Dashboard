@@ -46,7 +46,6 @@ export default function CreateInvestigationModal({
   const [suspects, setSuspects] = useState<SuspectInput[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
-  // Campos temporários para adicionar suspeito na lista
   const [tempSuspectName, setTempSuspectName] = useState("");
   const [tempSuspectRg, setTempSuspectRg] = useState("");
   const [tempSuspectDesc, setTempSuspectDesc] = useState("");
@@ -63,11 +62,10 @@ export default function CreateInvestigationModal({
         name: tempSuspectName,
         rg: tempSuspectRg || "Não informado",
         description: tempSuspectDesc || "Sem detalhes adicionais",
-        avatar: "", // Padrão vazio para o avatar
+        avatar: "",
         type: tempSuspectType
       }
     ]);
-    // Reseta temporários
     setTempSuspectName("");
     setTempSuspectRg("");
     setTempSuspectDesc("");
@@ -114,7 +112,6 @@ export default function CreateInvestigationModal({
 
       toast.success("Inquérito instaurado com sucesso!");
       onCreated();
-      // Limpa formulário
       setTitle("");
       setDescription("");
       setNotes("");
@@ -153,7 +150,6 @@ export default function CreateInvestigationModal({
             </Modal.Header>
 
             <Modal.Body className="space-y-4 py-4 overflow-y-auto max-h-[60vh] pr-2 scrollbar-thin">
-              {/* Informações Gerais */}
               <div className="space-y-3">
                 <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
                   Informações Gerais
@@ -180,13 +176,12 @@ export default function CreateInvestigationModal({
                 </div>
               </div>
 
-              {/* Investigadores Responsáveis */}
               <div className="space-y-3 pt-2">
                 <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
                   <Users size={14} /> Designar Investigadores
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[140px] overflow-y-auto border border-[#27272a] bg-black/10 rounded-xl p-3 scrollbar-thin">
-                  {investigators.map((inv) => (
+                  {investigators ? investigators.map((inv) => (
                     <label 
                       key={inv.userId} 
                       className={`flex items-center gap-2.5 p-2 rounded-lg cursor-pointer transition select-none ${
@@ -215,17 +210,19 @@ export default function CreateInvestigationModal({
                         <p className="text-[9px] text-gray-500 truncate leading-none">{inv.rank}</p>
                       </div>
                     </label>
-                  ))}
+                  )) : (
+                    <div className="bg-gray-300 p-4">
+                      Nenhum Investigador
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Registro de Suspeitos */}
               <div className="space-y-3 pt-2">
                 <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
                   <UserPlus size={14} /> Suspeitos & Cúmplices Iniciais
                 </h3>
                 
-                {/* Form temporário */}
                 <div className="p-3 border border-[#27272a] bg-black/10 rounded-xl space-y-3">
                   <div className="grid grid-cols-2 gap-2">
                     <div className="flex flex-col gap-1">
@@ -235,7 +232,7 @@ export default function CreateInvestigationModal({
                         value={tempSuspectName}
                         onChange={(e) => setTempSuspectName(e.target.value)}
                         placeholder="Ex: John Doe"
-                        className="bg-black/20 border border-[#27272a] rounded-lg px-2.5 py-1.5 text-xs text-white"
+                        className="bg-black/20 border border-[#27272a] rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500/50 transition resize-none"
                       />
                     </div>
                     <div className="flex flex-col gap-1">
@@ -245,7 +242,7 @@ export default function CreateInvestigationModal({
                         value={tempSuspectRg}
                         onChange={(e) => setTempSuspectRg(e.target.value)}
                         placeholder="Ex: 4819"
-                        className="bg-black/20 border border-[#27272a] rounded-lg px-2.5 py-1.5 text-xs text-white"
+                        className="bg-black/20 border border-[#27272a] rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500/50 transition resize-none"
                       />
                     </div>
                   </div>
@@ -257,7 +254,7 @@ export default function CreateInvestigationModal({
                         value={tempSuspectDesc}
                         onChange={(e) => setTempSuspectDesc(e.target.value)}
                         placeholder="Ex: Gerente financeiro do grupo"
-                        className="bg-black/20 border border-[#27272a] rounded-lg px-2.5 py-1.5 text-xs text-white"
+                        className="bg-black/20 border border-[#27272a] rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500/50 transition resize-none"
                       />
                     </div>
                     <div className="flex flex-col gap-1">
@@ -283,7 +280,6 @@ export default function CreateInvestigationModal({
                   </Button>
                 </div>
 
-                {/* Lista de Suspeitos adicionados */}
                 {suspects.length > 0 && (
                   <div className="flex flex-col gap-2 max-h-[150px] overflow-y-auto border border-[#27272a] rounded-xl p-2.5 scrollbar-thin">
                     {suspects.map((sus, idx) => (
@@ -314,7 +310,6 @@ export default function CreateInvestigationModal({
                 )}
               </div>
 
-              {/* Anotações Iniciais */}
               <div className="flex flex-col gap-1 pt-2">
                 <label className="text-[11px] font-semibold text-zinc-500">Notas Adicionais</label>
                 <textarea

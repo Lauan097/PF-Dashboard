@@ -169,7 +169,6 @@ export default function ServicesTab({ userId, guildId }: ServicesTabProps) {
 
   return (
     <div className="space-y-6">
-      {/* Card de Configuração */}
       <div className="bg-[#1a1a1a] border border-white/5 rounded-2xl p-6 space-y-5">
         <div className="flex items-center gap-2">
           <Settings size={15} className="text-zinc-400" />
@@ -179,7 +178,6 @@ export default function ServicesTab({ userId, guildId }: ServicesTabProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Meta semanal em horas */}
           <NumberField
             value={goalHours}
             onChange={(v) => setGoalHours(v ?? 0)}
@@ -196,7 +194,6 @@ export default function ServicesTab({ userId, guildId }: ServicesTabProps) {
             <Description>Horas semanais que o membro precisa cumprir.</Description>
           </NumberField>
 
-          {/* Desconto em percentagem */}
           <NumberField
             value={discountFraction}
             onChange={(v) => setDiscountFraction(v ?? 0)}
@@ -216,7 +213,6 @@ export default function ServicesTab({ userId, guildId }: ServicesTabProps) {
           </NumberField>
         </div>
 
-        {/* Resumo da meta efetiva */}
         {data && (
           <div className="flex items-center gap-2 bg-[#222] border border-white/5 rounded-xl px-4 py-3">
             <Target size={13} className="text-emerald-400 shrink-0" />
@@ -248,14 +244,12 @@ export default function ServicesTab({ userId, guildId }: ServicesTabProps) {
         </div>
       </div>
 
-      {/* Histórico de metas semanais */}
       {data?.weeklyHistory && data.weeklyHistory.length > 0 && (
         <div className="bg-[#1a1a1a] border border-white/5 rounded-2xl p-5">
           <WeeklyHistory weeks={data.weeklyHistory} />
         </div>
       )}
 
-      {/* Histórico de sessões */}
       <div className="bg-[#1a1a1a] border border-white/5 rounded-2xl p-5">
         <SessionsTable userId={userId} guildId={guildId} />
       </div>

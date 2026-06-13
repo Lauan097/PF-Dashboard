@@ -96,16 +96,18 @@ export async function POST(req: Request) {
       channelId,
       blocks,
       editLastMessage,
-      renewMention
+      renewMention,
+      messageLink
     }: { 
       guildId: string; 
       channelId: string; 
       blocks: EditorBlock[]; 
       editLastMessage: boolean; 
-      renewMention: boolean 
+      renewMention: boolean;
+      messageLink?: string;
     } = await req.json();
 
-    if (!guildId || !channelId || !blocks) {
+    if (!guildId || (!channelId && !messageLink) || !blocks) {
       return NextResponse.json(
         { success: false, error: "Dados insuficientes" },
         { status: 400 },
@@ -126,7 +128,8 @@ export async function POST(req: Request) {
           components: componentesFormatados,
           isV2: true,
           editLastMessage,
-          renewMention
+          renewMention,
+          messageLink
         },
         (resposta: BotResponse) => {
           resolve(NextResponse.json(resposta));

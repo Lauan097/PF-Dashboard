@@ -19,7 +19,7 @@ export default function StatsSummary({ list }: StatsSummaryProps) {
 
   const stats = [
     {
-      title: "Total de Inquéritos",
+      title: "Total",
       value: total,
       icon: Folder,
       color: "from-blue-500/10 to-indigo-500/10 border-blue-500/20 text-blue-400"

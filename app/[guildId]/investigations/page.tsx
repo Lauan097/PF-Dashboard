@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, startTransition } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Skeleton, Button } from "@heroui/react";
 import { 
@@ -40,6 +40,7 @@ interface Investigator {
 
 export default function InvestigationsPage() {
   const params = useParams();
+  const router = useRouter();
   const guildId = params.guildId as string;
 
   const [investigations, setInvestigations] = useState<Investigation[]>([]);
@@ -127,7 +128,7 @@ export default function InvestigationsPage() {
       exit="exit"
       transition={variants.transition}
     >
-      <div className="max-w-7xl mx-auto pt-10 space-y-8">
+      <div className="max-w-7xl mx-auto pt-10 space-y-8 min-h-screen">
         
         <div className="flex items-start justify-between border-b border-[#27272a]/40 pb-6">
           <div className="flex items-center gap-4">
@@ -209,7 +210,9 @@ export default function InvestigationsPage() {
                 <div className="py-12 text-center text-sm text-gray-500 bg-[#121214] flex flex-col items-center justify-center gap-2">
                   <FolderOpen size={32} className="text-zinc-600" />
                   <p>Nenhuma investigação instaurada até o momento.</p>
-                  <p className="text-xs text-zinc-600">{"Clique em 'Instaurar Inquérito' para registrar o primeiro caso."}</p>
+                  <p className="text-xs text-zinc-600">
+                    {"Clique em 'Instaurar Inquérito' para registrar o primeiro caso."}
+                  </p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
@@ -227,7 +230,8 @@ export default function InvestigationsPage() {
                       {investigations.map((caseItem) => (
                         <tr 
                           key={caseItem.id}
-                          className="hover:bg-white/2 transition-colors"
+                          className="hover:bg-white/2 transition-colors cursor-pointer"
+                          onClick={() => router.push(`/[guildId]/investigations/${caseItem.id}`.replace("[guildId]", guildId))}
                         >
                           <td className="py-4 px-5 font-mono text-zinc-400 font-bold">
                             #{caseItem.hash}

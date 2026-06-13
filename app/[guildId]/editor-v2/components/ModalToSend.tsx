@@ -10,6 +10,7 @@ import {
   SendHorizontal,
   AlertCircle,
   CheckCircle2,
+  Edit,
 } from "lucide-react";
 
 import { TooltipButton } from "@/app/components/TooltipButton";
@@ -37,7 +38,9 @@ export function ModalToSend({
   currentTime,
 }: ModalToSendProps) {
   const [channelSend, setChannelSend] = useState("");
-  const [isSending, setIsSending] = useState(false);
+  const [linkMsgEdit, setLinkMsgEdit] = useState("");
+  const [sendingType, setSendingType] = useState<"send" | "edit" | null>(null);
+  const isSending = sendingType !== null;
   const [checkboxValue, setCheckboxValue] = useState(false);
   const [newMention, setNewMention] = useState(false);
   const [modalContainer, setModalContainer] = useState<HTMLDivElement | null>(
@@ -45,34 +48,45 @@ export function ModalToSend({
   );
 
   const handleSendMessage = useCallback(
-    async (channelId?: string) => {
+    async (channelId?: string, useLink?: boolean) => {
       const target = channelId || channelSend;
-      if (!target || !guildId || isSending) return;
+      if (!useLink && !target) return;
+      if (!guildId || isSending) return;
 
-      setIsSending(true);
+      setSendingType(useLink ? "edit" : "send");
       try {
         const res = await fetch("/api/data/guild/send-message", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ 
             guildId, 
-            channelId: target, 
+            channelId: target || "", 
             blocks, 
             editLastMessage: checkboxValue,
             renewMention: newMention,
+            messageLink: useLink ? linkMsgEdit : undefined,
           }),
         });
 
         if (!res.ok) throw new Error("Resposta inválida do servidor");
-        toast.success("Mensagem enviada com sucesso!");
+        const data = await res.json();
+        
+        if (data.success) {
+          toast.success(data.message || "Mensagem enviada com sucesso!", { description: data.description });
+          if (useLink) {
+            setLinkMsgEdit("");
+          }
+        } else {
+          toast.error(data.error || "Erro ao processar mensagem.");
+        }
       } catch (err) {
         console.error(err);
         toast.error("Erro ao enviar mensagem.");
       } finally {
-        setIsSending(false);
+        setSendingType(null);
       }
     },
-    [channelSend, guildId, isSending, blocks, checkboxValue, newMention],
+    [channelSend, guildId, isSending, blocks, checkboxValue, newMention, linkMsgEdit],
   );
 
   useEffect(() => {
@@ -155,18 +169,6 @@ export function ModalToSend({
                       Prévia da Mensagem
                     </p>
                     <div className="max-w-4xl mx-auto w-full bg-[#383A40] p-6 rounded-xl">
-
-                      {/* Fake Discord channel header 
-                        <div className="px-4 mb-2 flex items-center gap-2 select-none">
-                          <div className="w-4 h-4 text-zinc-400">
-                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
-                              <path d="M5.88 2.25a.75.75 0 0 1 .75.75v.5h11.25v-.5a.75.75 0 0 1 1.5 0v.5H20a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h.63v-.5a.75.75 0 0 1 .75-.75Z"/>
-                            </svg>
-                          </div>
-                          <span className="text-zinc-400 text-sm font-medium">anúncios-preview</span>
-                        </div>
-                      */}
-
                       <div className="px-4 mb-4">
                         <div className="flex items-center gap-2">
                           <div className="flex-1 h-px bg-zinc-700/50" />
@@ -254,12 +256,12 @@ export function ModalToSend({
                           <button
                             disabled={hasErrors || !channelSend || isSending}
                             onClick={() => handleSendMessage()}
-                            className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md text-sm font-medium transition-colors duration-150
+                            className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-full text-sm font-medium transition-colors duration-150
                             bg-[#5865F2] hover:bg-[#4752C4] text-white
                             disabled:opacity-40 disabled:bg-zinc-700 cursor-pointer disabled:cursor-auto"
                           >
                             <SendHorizontal size={14} />
-                            {isSending ? "Enviando…" : "Enviar"}
+                            {sendingType === "send" ? "Enviando…" : "Enviar"}
                           </button>
                         </div>
                       </div>
@@ -324,6 +326,27 @@ export function ModalToSend({
                             </Label>
                           </Checkbox.Content>
                         </Checkbox>
+                      </div>
+
+                      <div className="border-t border-zinc-700/40 pt-2 space-y-2">
+                        <input 
+                          placeholder="Cole o link da mensagem aqui"
+                          aria-label="Link da mensagem"
+                          className="w-full input"
+                          value={linkMsgEdit}
+                          onChange={(e) => setLinkMsgEdit(e.target.value)}
+                        />
+                        <button
+                          disabled={hasErrors || isSending || !linkMsgEdit}
+                          onClick={() => handleSendMessage(undefined, true)}
+                          className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-full text-sm font-medium transition-colors duration-150
+                          bg-[#5865F2] hover:bg-[#4752C4] text-white
+                          disabled:opacity-40 disabled:bg-zinc-700 cursor-pointer disabled:cursor-auto
+                          "
+                        >
+                          <Edit size={14} />
+                          {sendingType === "edit" ? "Editando…" : "Editar Mensagem"}
+                        </button>
                       </div>
 
                       <div className="bg-zinc-800 rounded-md p-3 space-y-1.5">

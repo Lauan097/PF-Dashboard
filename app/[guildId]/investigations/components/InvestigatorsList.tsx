@@ -64,8 +64,6 @@ export default function InvestigatorsList({ investigators }: InvestigatorsListPr
                   {inv.rank}
                 </p>
               </div>
-
-              <div className="h-2 w-2 rounded-full bg-emerald-500 ring-4 ring-emerald-500/10 shrink-0" title="Ativo" />
             </div>
           ))}
         </div>
